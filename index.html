@@ -1,0 +1,3456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EsCuatroCero · Gestión Programa Educativo</title>
+    <meta name="description" content="Gestión del programa EsCuatroCero (IES Virgen de Villadiego, Peñaflor): normativa, casos de éxito, documentos y materiales de interés." />
+
+    <!-- PWA: manifest, colores e iconos (rutas relativas: funciona en la raíz o en subcarpeta de GitHub Pages) -->
+    <meta name="theme-color" content="#0b2a41" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="EsCuatroCero" />
+
+    <!-- Fuentes e iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- Firebase SDKs (modulares) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js",
+                "firebase/analytics": "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"
+            }
+        }
+    </script>
+
+    <style>
+        /* ---------- Reset & base ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f5fa;
+            color: #1a2b3c;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        /* ---------- Contenedor principal ---------- */
+        .app {
+            max-width: 1400px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.10), 0 8px 24px rgba(0, 20, 40, 0.04);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        /* ---------- PANTALLA DE LOGIN ---------- */
+        #loginScreen {
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        #loginScreen h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0b2a41;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        #loginScreen .sub {
+            color: #6b7f94;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .login-box .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .login-box .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1f3b54;
+        }
+
+        .login-box .form-group input {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e9f0;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            background: #fafcfe;
+            color: #0b2a41;
+        }
+
+        .login-box .form-group input:focus {
+            outline: none;
+            border-color: #2a7faa;
+            box-shadow: 0 0 0 3px rgba(42, 127, 170, 0.15);
+        }
+
+        .login-box .btn-login {
+            background: #2a7faa;
+            color: #fff;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(42, 127, 170, 0.25);
+            margin-top: 0.5rem;
+        }
+
+        .login-box .btn-login:hover {
+            background: #1f6a91;
+        }
+
+        .login-error {
+            color: #b13e3a;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 1.5rem;
+            white-space: pre-wrap;
+        }
+
+        .login-error.success {
+            color: #2a7faa;
+        }
+
+        .login-box .user-credentials {
+            background: #f5f8fc;
+            border-radius: 12px;
+            padding: 0.7rem 1rem;
+            border: 1px dashed #c8d8e8;
+            font-size: 0.85rem;
+            color: #1f3b54;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            align-items: center;
+        }
+
+        .login-box .user-credentials strong {
+            color: #0b2a41;
+        }
+
+        .login-box .admin-note {
+            font-size: 0.75rem;
+            color: #8aa1b9;
+            text-align: center;
+            margin-top: 0.2rem;
+        }
+
+        /* ---------- BANNER ---------- */
+        .banner {
+            background: linear-gradient(145deg, #0b2a41 0%, #1a4b6e 100%);
+            padding: 1.8rem 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .banner-logo {
+            flex-shrink: 0;
+            width: 68px;
+            height: 68px;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-logo svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .banner-text {
+            flex: 1 1 200px;
+            z-index: 1;
+        }
+
+        .banner-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .banner-sub {
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .banner-sub i {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .banner-badge {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #c0dcee;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .banner-badge i {
+            font-size: 0.9rem;
+        }
+
+        .banner-badge .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        .banner-badge .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ---------- Pestañas ---------- */
+        .tabs-wrapper {
+            padding: 0 2rem 0 2rem;
+            background: #ffffff;
+            position: relative;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            border-bottom: 2px solid #e9edf2;
+            padding-top: 0.5rem;
+            flex-wrap: nowrap;              /* fila única: se desplaza en horizontal */
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain; /* evita el gesto de "atrás" del navegador en móvil */
+            scrollbar-width: none;          /* Firefox: sin barra visible */
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;                  /* Chrome/Safari/Edge: sin barra visible */
+        }
+
+        .tab-btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            background: transparent;
+            border: none;
+            padding: 0.85rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7f94;
+            border-radius: 40px 40px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn i {
+            font-size: 0.95rem;
+            opacity: 0.7;
+        }
+
+        .tab-btn:hover {
+            color: #1f4b6e;
+            background: #f0f5fa;
+        }
+
+        .tab-btn.active {
+            color: #0b2a41;
+            background: #ffffff;
+            box-shadow: inset 0 -2px 0 #2a7faa;
+            font-weight: 700;
+        }
+
+        .tab-btn.active i {
+            opacity: 1;
+            color: #2a7faa;
+        }
+
+        .tab-btn.hidden-tab {
+            display: none;
+        }
+
+        /* Flechas de desplazamiento de las pestañas */
+        .tabs-arrow {
+            position: absolute;
+            top: 0;
+            bottom: 2px;
+            width: 2.6rem;
+            border: none;
+            background: transparent;
+            color: #2a7faa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-size: 0.95rem;
+            z-index: 5;
+        }
+
+        .tabs-arrow::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .tabs-arrow-left {
+            left: 0.2rem;
+        }
+        .tabs-arrow-left::before {
+            background: linear-gradient(to right, #ffffff 35%, rgba(255, 255, 255, 0));
+        }
+
+        .tabs-arrow-right {
+            right: 0.2rem;
+        }
+        .tabs-arrow-right::before {
+            background: linear-gradient(to left, #ffffff 35%, rgba(255, 255, 255, 0));
+        }
+
+        .tabs-arrow i {
+            background: #ffffff;
+            border: 1px solid #d7e2ec;
+            border-radius: 50%;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(11, 42, 65, 0.12);
+            transition: all 0.15s ease;
+        }
+
+        .tabs-arrow:hover:not(:disabled) i {
+            background: #2a7faa;
+            border-color: #2a7faa;
+            color: #ffffff;
+        }
+
+        .tabs-arrow:disabled {
+            cursor: default;
+            color: #b9c6d2;
+        }
+
+        .tabs-arrow[hidden] {
+            display: none;
+        }
+
+        /* Reordenación de pestañas por arrastre (solo admin) */
+        .tab-btn .tab-grip {
+            font-size: 0.72rem;
+            opacity: 0.45;
+            margin-right: -0.25rem;
+        }
+
+        body.is-admin .tabs .tab-btn {
+            cursor: grab;
+        }
+
+        body.is-admin .tabs .tab-btn:active {
+            cursor: grabbing;
+        }
+
+        .tab-btn.tab-dragging {
+            position: relative;
+            z-index: 6;
+            opacity: 0.55;
+            background: #eef5fa;
+            box-shadow: inset 0 0 0 2px #2a7faa;
+        }
+
+        body.tab-dnd-active {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Botón "+" para añadir secciones (solo admin) */
+        .tab-add {
+            flex: 0 0 auto;
+            align-self: center;
+            background: transparent;
+            border: 1.5px dashed #b9c6d2;
+            color: #6b7f94;
+            border-radius: 40px;
+            width: 2.2rem;
+            height: 2.2rem;
+            margin: 0 0.25rem 0.35rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-add:hover {
+            border-color: #2a7faa;
+            color: #2a7faa;
+            background: #f0f5fa;
+        }
+
+        .tab-add.hidden-tab {
+            display: none;
+        }
+
+        /* Botón de gestión de pestañas (visible para todos los usuarios) */
+        .tab-add.tab-mgmt {
+            border-style: solid;
+            border-color: #d7e2ec;
+            background: #f9fbfd;
+        }
+
+        .tab-add.tab-mgmt:hover {
+            border-color: #2a7faa;
+            background: #eef6fc;
+        }
+
+        /* Menú flotante para mover una tarjeta a otra sección (admin) */
+        #moveMenu {
+            position: fixed;
+            z-index: 1200;
+            background: #ffffff;
+            border: 1px solid #e2e9f0;
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(11, 42, 65, 0.18);
+            padding: 0.4rem;
+            min-width: 210px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #moveMenu[hidden] {
+            display: none;
+        }
+
+        .move-menu-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #8aa1b9;
+            padding: 0.4rem 0.6rem 0.3rem;
+        }
+
+        .move-menu-empty {
+            font-size: 0.85rem;
+            color: #8aa1b9;
+            padding: 0.5rem 0.6rem;
+        }
+
+        .move-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1f3b54;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .move-menu-item i {
+            color: #2a7faa;
+            width: 1.1rem;
+            text-align: center;
+        }
+
+        .move-menu-item:hover {
+            background: #eef6fc;
+            color: #0b2a41;
+        }
+
+        .btn-icon.move-btn:hover {
+            background: #eef6fc;
+            color: #2a7faa;
+        }
+
+        /* ---------- Panel de gestión de pestañas ---------- */
+        .tab-mgmt-hint {
+            font-size: 0.85rem;
+            color: #6b7f94;
+            margin: -0.5rem 0 1rem;
+        }
+
+        .tab-mgmt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .tab-mgmt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.55rem 0.8rem;
+            border: 1px solid #eef2f6;
+            border-radius: 12px;
+            background: #f9fbfd;
+        }
+
+        .tab-mgmt-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: #1f3b54;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-mgmt-name i {
+            color: #2a7faa;
+            width: 1.1rem;
+            text-align: center;
+        }
+
+        .tab-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .tab-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .tab-switch-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #c8d8e8;
+            border-radius: 40px;
+            transition: background 0.2s ease;
+        }
+
+        .tab-switch-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            top: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-switch input:checked + .tab-switch-slider {
+            background: #2a7faa;
+        }
+
+        .tab-switch input:checked + .tab-switch-slider::before {
+            transform: translateX(18px);
+        }
+
+        .tab-switch input:disabled + .tab-switch-slider {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        /* Herramientas de sección (renombrar/eliminar) junto al título del panel */
+        .tab-admin-tools {
+            display: inline-flex;
+            gap: 0.3rem;
+            margin-left: 0.6rem;
+            vertical-align: middle;
+        }
+
+        .tab-admin-tools .btn-icon {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.45rem;
+        }
+
+        /* ---------- Panel de contenido ---------- */
+        .content {
+            padding: 1.8rem 2rem 2.5rem;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeUp 0.25s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a2b3c;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-header h2 i {
+            color: #2a7faa;
+            font-size: 1.2rem;
+        }
+
+        .btn-add {
+            background: #2a7faa;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(42, 127, 170, 0.25);
+        }
+
+        .btn-add:hover {
+            background: #1f6a91;
+            transform: scale(1.01);
+        }
+
+        .btn-add i {
+            font-size: 0.9rem;
+        }
+
+        .btn-add.hidden-btn {
+            display: none;
+        }
+
+        /* ---------- Lista de elementos ---------- */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-card {
+            background: #f9fbfd;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+            cursor: default;
+            user-select: none;
+        }
+
+        .item-card.draggable {
+            cursor: grab;
+        }
+
+        .item-card.draggable:active {
+            cursor: grabbing;
+        }
+
+        /* Tarjeta mientras se arrastra */
+        .item-card.dragging {
+            opacity: 0.55;
+            background: #eef6fc;
+            border: 1.5px dashed #2a7faa;
+            box-shadow: 0 10px 24px rgba(42, 127, 170, 0.18);
+            transform: scale(1.01);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Manija de arrastre (solo admin) */
+        .drag-handle {
+            color: #b6ccdf;
+            cursor: grab;
+            font-size: 1.05rem;
+            padding: 0.25rem 0.45rem 0.25rem 0;
+            flex-shrink: 0;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: color 0.15s ease;
+        }
+
+        .drag-handle:hover {
+            color: #2a7faa;
+        }
+
+        /* Controles de reordenación: manija + flechas ▲▼ (solo admin) */
+        .drag-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+            flex-shrink: 0;
+        }
+
+        .drag-arrows {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn-arrow {
+            background: transparent;
+            border: none;
+            color: #b6ccdf;
+            cursor: pointer;
+            font-size: 0.62rem;
+            padding: 0.15rem 0.3rem;
+            border-radius: 6px;
+            line-height: 1;
+            transition: color 0.15s ease, background 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-arrow:hover:not(:disabled) {
+            color: #2a7faa;
+            background: #eef6fc;
+        }
+
+        .btn-arrow:disabled {
+            opacity: 0.25;
+            cursor: default;
+        }
+
+        /* Estado global durante el arrastre */
+        body.dnd-active {
+            cursor: grabbing;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body.dnd-active a {
+            pointer-events: none;
+        }
+
+        .item-card:hover {
+            background: #f4f8fc;
+            border-color: #dce5ed;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            flex: 1 1 200px;
+        }
+
+        .item-title-link {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #2a7faa;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(42, 127, 170, 0.3);
+            transition: border-color 0.2s, color 0.2s;
+            display: inline-block;
+            word-break: break-word;
+            pointer-events: auto; /* Permitir clics en el enlace */
+        }
+
+        .item-title-link:hover {
+            color: #1a5a7a;
+            border-bottom-color: #1a5a7a;
+            text-decoration: none;
+        }
+
+        .item-title-link i {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            opacity: 0.6;
+        }
+
+        /* Icono de YouTube junto al enlace (si el enlace apunta a YouTube) */
+        .item-title-link .yt-badge {
+            color: #ff0000;
+            font-size: 1rem;
+            margin-left: 0.35rem;
+            opacity: 1;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            margin-top: 0.4rem;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: #8aa1b9;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-icon:hover {
+            background: #eef2f6;
+            color: #1f4b6e;
+        }
+
+        .btn-icon.danger:hover {
+            background: #fee9e7;
+            color: #b13e3a;
+        }
+
+        .btn-icon.hidden-btn {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #7a94ae;
+            font-size: 0.95rem;
+        }
+
+        .empty-state i {
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.5;
+            display: block;
+            color: #b6ccdf;
+        }
+
+        /* ---------- Tabla de usuarios (admin) ---------- */
+        .users-table-wrap {
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 2px solid #e9edf2;
+            color: #1f3b54;
+            font-weight: 600;
+        }
+
+        .users-table td {
+            padding: 0.7rem 0.5rem;
+            border-bottom: 1px solid #eef2f6;
+            vertical-align: middle;
+        }
+
+        .users-table .role-badge {
+            background: #e9f0f7;
+            color: #1f5b7a;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .users-table .role-badge.admin {
+            background: #d4e3f0;
+            color: #0b2a41;
+        }
+
+        .users-table .btn-icon-sm {
+            background: transparent;
+            border: none;
+            color: #8aa1b9;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .users-table .btn-icon-sm:hover {
+            background: #eef2f6;
+            color: #1f4b6e;
+        }
+
+        .users-table .btn-icon-sm.danger:hover {
+            background: #fee9e7;
+            color: #b13e3a;
+        }
+
+        .add-user-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: flex-end;
+            margin: 1.5rem 0 1rem;
+            padding: 1rem 1.5rem;
+            background: #f9fbfd;
+            border-radius: 16px;
+            border: 1px solid #eef2f6;
+        }
+
+        .add-user-form .form-group {
+            flex: 1 1 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .add-user-form .form-group label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #4d6a85;
+        }
+
+        .add-user-form .form-group input,
+        .add-user-form .form-group select {
+            padding: 0.5rem 0.8rem;
+            border: 1.5px solid #e2e9f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #ffffff;
+            transition: border-color 0.15s;
+        }
+
+        .add-user-form .form-group input:focus,
+        .add-user-form .form-group select:focus {
+            outline: none;
+            border-color: #2a7faa;
+            box-shadow: 0 0 0 3px rgba(42, 127, 170, 0.12);
+        }
+
+        .add-user-form .btn-add-user {
+            background: #2a7faa;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+            flex-shrink: 0;
+            height: 42px;
+            align-self: flex-end;
+        }
+
+        .add-user-form .btn-add-user:hover {
+            background: #1f6a91;
+        }
+
+        /* ---------- Modal (para enlaces) ---------- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 30, 50, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: #ffffff;
+            border-radius: 28px;
+            max-width: 520px;
+            width: 100%;
+            padding: 2rem 2rem 1.8rem;
+            box-shadow: 0 40px 80px rgba(0, 10, 30, 0.25);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.96) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0b2a41;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            color: #8aa1b9;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+
+        .modal-close:hover {
+            background: #f0f4f8;
+            color: #1f4b6e;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .modal-body .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .modal-body .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1f3b54;
+        }
+
+        .modal-body .form-group input {
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e9f0;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            background: #fafcfe;
+            color: #0b2a41;
+        }
+
+        .modal-body .form-group input:focus {
+            outline: none;
+            border-color: #2a7faa;
+            box-shadow: 0 0 0 3px rgba(42, 127, 170, 0.15);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: #eef2f6;
+            border: none;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1f3b54;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e9f0;
+        }
+
+        .btn-primary {
+            background: #2a7faa;
+            border: none;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(42, 127, 170, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #1f6a91;
+        }
+
+        /* ---------- Pantallas anchas: aprovechar el espacio disponible ---------- */
+        /* Portátiles y escritorios pequeños: más aire interior (≥1024px) */
+        @media (min-width: 1024px) {
+            .banner {
+                padding: 2rem 2.75rem;
+            }
+            .tabs-wrapper {
+                padding: 0 2.5rem;
+            }
+            .content {
+                padding: 2.1rem 2.5rem 2.7rem;
+            }
+            .modal {
+                max-width: 560px;
+            }
+        }
+
+        /* Escritorio grande: el frame crece hasta 1560px */
+        @media (min-width: 1600px) {
+            .app {
+                max-width: 1560px;
+            }
+            .banner {
+                padding: 2.3rem 3rem;
+            }
+            .banner-logo {
+                width: 76px;
+                height: 76px;
+            }
+            .banner-title {
+                font-size: 2.25rem;
+            }
+            .tabs-wrapper {
+                padding: 0 3rem;
+            }
+            .content {
+                padding: 2.4rem 3rem 3rem;
+            }
+            .panel-header h2 {
+                font-size: 1.45rem;
+            }
+            .item-card {
+                padding: 1.1rem 1.75rem;
+            }
+            .modal {
+                max-width: 600px;
+            }
+        }
+
+        /* Monitores muy grandes (QHD/ultrawide): techo de 1680px */
+        @media (min-width: 2000px) {
+            .app {
+                max-width: 1680px;
+            }
+        }
+
+        /* Ultra-anchas: techo de 1800px para no perder legibilidad */
+        @media (min-width: 2400px) {
+            .app {
+                max-width: 1800px;
+            }
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 700px) {
+            .banner {
+                padding: 1.5rem 1.5rem;
+                gap: 1rem;
+            }
+            .banner-logo {
+                width: 54px;
+                height: 54px;
+                padding: 8px;
+            }
+            .banner-title {
+                font-size: 1.6rem;
+            }
+            .banner-sub {
+                font-size: 0.9rem;
+            }
+            .banner-badge {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+                padding: 0.3rem 1rem;
+                font-size: 0.75rem;
+            }
+            .tabs-wrapper {
+                padding: 0 1rem;
+            }
+            .tabs-arrow {
+                width: 2rem;
+                font-size: 0.85rem;
+            }
+            .tabs-arrow i {
+                width: 1.6rem;
+                height: 1.6rem;
+            }
+            .tab-btn .tab-grip {
+                font-size: 0.6rem;
+            }
+            .content {
+                padding: 1.5rem 1rem 2rem;
+            }
+            .tab-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .btn-add {
+                justify-content: center;
+            }
+            .item-card {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.6rem;
+                padding: 1rem;
+            }
+            .item-actions {
+                justify-content: flex-end;
+                margin-top: 0;
+            }
+            .modal {
+                padding: 1.5rem;
+            }
+            .add-user-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .add-user-form .btn-add-user {
+                align-self: stretch;
+            }
+            /* Controles de reordenación flotantes en móvil */
+            .item-card {
+                position: relative;
+            }
+            .item-card .item-info {
+                padding-right: 2.8rem;
+            }
+            .item-card .drag-controls {
+                position: absolute;
+                top: 0.45rem;
+                right: 0.45rem;
+            }
+            .item-card .drag-handle {
+                padding: 0.2rem 0.35rem;
+                font-size: 1.05rem;
+            }
+            .item-card .btn-arrow {
+                font-size: 0.8rem;
+                padding: 0.25rem 0.35rem;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .banner-title {
+                font-size: 1.3rem;
+            }
+            .banner-logo {
+                width: 44px;
+                height: 44px;
+                padding: 6px;
+            }
+            .tab-btn {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.8rem;
+            }
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+            .modal-footer button {
+                width: 100%;
+                justify-content: center;
+            }
+            #loginScreen {
+                padding: 2rem 1rem;
+            }
+        }
+
+        /* ---------- Scroll ---------- */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eef2f6;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c8d8e8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b0c4d8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+        <!-- PANTALLA DE LOGIN -->
+        <div id="loginScreen">
+            <h2><i class="fas fa-robot" style="color:#2a7faa;"></i> EsCuatroCero</h2>
+            <p class="sub">Un proyecto para el futuro</p>
+            <div class="login-box">
+                <div class="form-group">
+                    <label for="loginUsername">Usuario</label>
+                    <input type="text" id="loginUsername" placeholder="Nombre de usuario" />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" />
+                </div>
+                <div class="login-error" id="loginError"></div>
+                <button class="btn-login" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</button>
+
+                <!-- Credenciales de usuario estándar -->
+                <div class="user-credentials">
+                    <div><i class="fas fa-user" style="color:#2a7faa;"></i> <strong>usuario</strong> / <strong>usuario</strong></div>
+                    <div style="font-size:0.75rem; color:#7a94ae;">(acceso básico de visualización)</div>
+                </div>
+                <div class="admin-note">
+                    <i class="fas fa-lock"></i> Para acceso de administrador, contacta con el responsable.
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO DE LA APP (oculto hasta login) -->
+        <div id="appContent" style="display:none;">
+
+            <!-- BANNER -->
+            <header class="banner">
+                <div class="banner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" stroke="white" stroke-width="3" stroke-opacity="0.3" />
+                        <circle cx="50" cy="50" r="32" stroke="white" stroke-width="2.5" stroke-opacity="0.2" />
+                        <line x1="35" y1="22" x2="40" y2="32" stroke="white" stroke-width="3" stroke-linecap="round" />
+                        <line x1="65" y1="22" x2="60" y2="32" stroke="white" stroke-width="3" stroke-linecap="round" />
+                        <circle cx="35" cy="19" r="4" fill="white" fill-opacity="0.7" />
+                        <circle cx="65" cy="19" r="4" fill="white" fill-opacity="0.7" />
+                        <circle cx="40" cy="45" r="6" fill="white" fill-opacity="0.9" />
+                        <circle cx="60" cy="45" r="6" fill="white" fill-opacity="0.9" />
+                        <circle cx="41" cy="44" r="2.5" fill="#0b2a41" />
+                        <circle cx="61" cy="44" r="2.5" fill="#0b2a41" />
+                        <path d="M38 58 Q50 66 62 58" stroke="white" stroke-width="3" stroke-linecap="round" stroke-opacity="0.8" />
+                        <rect x="44" y="70" width="12" height="6" rx="2" fill="white" fill-opacity="0.25" />
+                        <circle cx="44" cy="73" r="2" fill="white" fill-opacity="0.5" />
+                        <circle cx="56" cy="73" r="2" fill="white" fill-opacity="0.5" />
+                        <line x1="50" y1="76" x2="50" y2="82" stroke="white" stroke-width="2" stroke-opacity="0.3" />
+                        <line x1="44" y1="82" x2="56" y2="82" stroke="white" stroke-width="2" stroke-opacity="0.3" />
+                    </svg>
+                </div>
+
+                <div class="banner-text">
+                    <div class="banner-title">
+                        EsCuatroCero
+                    </div>
+                    <div class="banner-sub">
+                        <i class="fas fa-map-pin"></i> IES Virgen de Villadiego, Peñaflor
+                    </div>
+                </div>
+
+                <div class="banner-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userRoleDisplay">usuario</span>
+                    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                </div>
+            </header>
+
+            <!-- Pestañas -->
+            <div class="tabs-wrapper">
+                <button class="tabs-arrow tabs-arrow-left" id="tabsArrowLeft" type="button" aria-label="Desplazar pestañas hacia la izquierda" aria-controls="tabsNav" hidden>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <nav class="tabs" role="tablist" id="tabsNav">
+                    <!-- Las pestañas se generan dinámicamente (JS) -->
+                </nav>
+                <button class="tabs-arrow tabs-arrow-right" id="tabsArrowRight" type="button" aria-label="Desplazar pestañas hacia la derecha" aria-controls="tabsNav" hidden>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="content">
+                <!-- Los paneles de contenido se generan dinámicamente (JS) -->
+                <div id="panelsHost"></div>
+
+                <!-- Panel: Usuarios (solo admin, fijo) -->
+                <section class="tab-panel" id="panel-usuarios" role="tabpanel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-users-cog"></i> Gestión de usuarios</h2>
+                    </div>
+                    <div class="add-user-form" id="addUserForm">
+                        <div class="form-group">
+                            <label for="newUserUsername">Usuario</label>
+                            <input type="text" id="newUserUsername" placeholder="nombre_usuario" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newUserPassword">Contraseña</label>
+                            <input type="text" id="newUserPassword" placeholder="****" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newUserRole">Rol</label>
+                            <select id="newUserRole">
+                                <option value="user">Usuario</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                        <button class="btn-add-user" id="btnAddUser"><i class="fas fa-user-plus"></i> Agregar</button>
+                    </div>
+                    <div class="users-table-wrap">
+                        <table class="users-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th style="text-align:right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Renderizado desde Firestore -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para enlaces (añadir/editar) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fas fa-link"></i> Nuevo enlace</h3>
+                <button class="modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputTitle">Título</label>
+                    <input type="text" id="inputTitle" placeholder="Ej. Orden de 30 de mayo de 2023" />
+                </div>
+                <div class="form-group">
+                    <label for="inputUrl">URL</label>
+                    <input type="url" id="inputUrl" placeholder="https://..." />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="modalCancel">Cancelar</button>
+                <button class="btn-primary" id="modalSave"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para secciones (crear/renombrar pestañas) -->
+    <div class="modal-overlay" id="tabModalOverlay">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3 id="tabModalTitle"><i class="fas fa-folder-plus"></i> Nueva sección</h3>
+                <button class="modal-close" id="tabModalClose" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputTabName">Nombre de la sección</label>
+                    <input type="text" id="inputTabName" placeholder="Ej. Materiales de interés" maxlength="40" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="tabModalCancel">Cancelar</button>
+                <button class="btn-primary" id="tabModalSave"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú flotante para mover una tarjeta a otra sección (admin) -->
+    <div id="moveMenu" hidden></div>
+
+    <!-- Modal para gestionar la visibilidad de las pestañas (todos los usuarios) -->
+    <div class="modal-overlay" id="tabMgmtOverlay">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3><i class="fas fa-sliders-h"></i> Gestionar pestañas</h3>
+                <button class="modal-close" id="tabMgmtClose" aria-label="Cerrar">&times;</button>
+            </div>
+            <p class="tab-mgmt-hint">Elige qué secciones quieres ver en tu barra de pestañas. Tu selección se guarda automáticamente.</p>
+            <div class="tab-mgmt-list" id="tabMgmtList"></div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="tabMgmtDone"><i class="fas fa-check"></i> Listo</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ---------- Import Firebase ----------
+        import { initializeApp } from 'firebase/app';
+        import { getAnalytics } from 'firebase/analytics';
+        import { getDatabase, ref, push, onValue, remove, set, update } from 'firebase/database';
+        import { getFirestore, collection, doc, getDocs, getDoc, setDoc, deleteDoc, query, where } from 'firebase/firestore';
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: 'AIzaSyAZrgrH46VBv56E9i8MUzwtxyoQf8t7He0',
+            authDomain: 'iesvdv-96a18.firebaseapp.com',
+            databaseURL: 'https://iesvdv-96a18-default-rtdb.europe-west1.firebasedatabase.app',
+            projectId: 'iesvdv-96a18',
+            storageBucket: 'iesvdv-96a18.firebasestorage.app',
+            messagingSenderId: '526669274609',
+            appId: '1:526669274609:web:541eed51a9f734f6467850',
+            measurementId: 'G-4BJFPJFPRM',
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+        const firestore = getFirestore(app);
+
+        // ---------- Referencias a la UI ----------
+        const loginScreen = document.getElementById('loginScreen');
+        const appContent = document.getElementById('appContent');
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userRoleDisplay = document.getElementById('userRoleDisplay');
+
+        const tabsNav = document.getElementById('tabsNav');
+        const tabsArrowLeft = document.getElementById('tabsArrowLeft');
+        const tabsArrowRight = document.getElementById('tabsArrowRight');
+        const panelsHost = document.getElementById('panelsHost');
+
+        const usersTableBody = document.getElementById('usersTableBody');
+        const newUserUsername = document.getElementById('newUserUsername');
+        const newUserPassword = document.getElementById('newUserPassword');
+        const newUserRole = document.getElementById('newUserRole');
+        const btnAddUser = document.getElementById('btnAddUser');
+
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const inputTitle = document.getElementById('inputTitle');
+        const inputUrl = document.getElementById('inputUrl');
+        const modalSave = document.getElementById('modalSave');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalClose = document.getElementById('modalClose');
+
+        const tabModalOverlay = document.getElementById('tabModalOverlay');
+        const tabModalTitle = document.getElementById('tabModalTitle');
+        const inputTabName = document.getElementById('inputTabName');
+        const tabModalSave = document.getElementById('tabModalSave');
+        const tabModalCancel = document.getElementById('tabModalCancel');
+        const tabModalClose = document.getElementById('tabModalClose');
+
+        const moveMenu = document.getElementById('moveMenu');
+        const tabMgmtOverlay = document.getElementById('tabMgmtOverlay');
+        const tabMgmtList = document.getElementById('tabMgmtList');
+        const tabMgmtClose = document.getElementById('tabMgmtClose');
+        const tabMgmtDone = document.getElementById('tabMgmtDone');
+
+        // ---------- Estado ----------
+        let currentUser = null;
+        let currentTab = 'normativa';
+        let editingKey = null;
+
+        // ---------- Registro de secciones (pestañas) ----------
+        // Las 4 primeras son predefinidas; las demás las crea el administrador
+        // y se guardan en Firebase (nodo "tabs": clave -> { name }).
+        const PREDEFINED_TABS = [
+            { key: 'normativa', name: 'Normativa', icon: 'fa-gavel' },
+            { key: 'exito', name: 'Casos de éxito', icon: 'fa-star' },
+            { key: 'documentos', name: 'Documentos de interés', icon: 'fa-file-alt' },
+            { key: 'materiales', name: 'Materiales de interés', icon: 'fa-box-open' }
+        ];
+        const CUSTOM_TAB_ICON = 'fa-layer-group';
+        const RESERVED_TAB_KEYS = ['tabs', 'tabOrder', 'usuarios', 'users'];
+        let customTabs = {};          // clave -> { name } (desde Firebase)
+        const listenedTabs = new Set();
+
+        // Preferencias de pestañas del usuario conectado (pestañas ocultas)
+        let cachedHiddenTabs = {};   // clave de pestaña -> true (oculta para este usuario)
+        let prefsUnsub = null;       // cancelador de la escucha en Firebase
+        let prefsListeningFor = null;
+
+        // Los nombres de usuario se usan como rutas de Firebase: se limpian los
+        // caracteres que Firebase no admite en las claves (. $ # [ ] /)
+        function sanitizeUserPath(name) {
+            return String(name || '').replace(/[.$#\[\]\/]/g, '_');
+        }
+
+        function getTabName(key) {
+            if (key === 'usuarios') return 'Usuarios';
+            const pre = PREDEFINED_TABS.find(t => t.key === key);
+            if (pre) return pre.name;
+            if (customTabs[key] && customTabs[key].name) return customTabs[key].name;
+            return key;
+        }
+
+        function getTabIcon(key) {
+            const pre = PREDEFINED_TABS.find(t => t.key === key);
+            return pre ? pre.icon : CUSTOM_TAB_ICON;
+        }
+
+        function getContentTabKeys() {
+            return [...PREDEFINED_TABS.map(t => t.key), ...Object.keys(customTabs)];
+        }
+
+        // Claves de contenido ordenadas igual que en la tira de pestañas
+        // (según el orden guardado en Firebase, nodo "tabOrder")
+        function sortedContentKeys() {
+            const keys = getContentTabKeys();
+            const rank = (key) => {
+                if (cachedTabOrder && typeof cachedTabOrder[key] === 'number') return cachedTabOrder[key];
+                const di = DEFAULT_TABS.indexOf(key);
+                if (di >= 0) return 100 + di;
+                return 200 + keys.indexOf(key); // secciones nuevas al final
+            };
+            return keys.slice().sort((a, b) => rank(a) - rank(b));
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        // Detecta si una URL apunta a YouTube (vídeo, canal, youtu.be, music...)
+        function isYouTubeUrl(url) {
+            if (!url) return false;
+            try {
+                const u = new URL(url);
+                const h = u.hostname.toLowerCase();
+                return h === 'youtu.be' || h.endsWith('.youtu.be')
+                    || h === 'youtube.com' || h.endsWith('.youtube.com');
+            } catch (_) {
+                return /youtube\.com|youtu\.be/i.test(url);
+            }
+        }
+
+        // Genera una clave de nodo válida y única a partir del nombre de la sección
+        function slugifyTabName(name) {
+            const base = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+                .slice(0, 24) || 'seccion';
+            let key = base;
+            let n = 2;
+            const taken = () => RESERVED_TAB_KEYS.includes(key)
+                || customTabs[key] !== undefined
+                || cachedData[key] !== undefined;
+            while (taken()) { key = `${base}-${n++}`; }
+            return key;
+        }
+
+        // Almacenar los últimos datos de cada tabla para poder re-renderizar
+        const cachedData = {
+            normativa: null,
+            exito: null,
+            documentos: null,
+            materiales: null
+        };
+
+        // ---------- Funciones de autenticación ----------
+        async function createTestUsers() {
+            try {
+                const usersRef = collection(firestore, 'users');
+                // Admin
+                const qAdmin = query(usersRef, where('username', '==', 'admin'));
+                const snapAdmin = await getDocs(qAdmin);
+                if (snapAdmin.empty) {
+                    await setDoc(doc(firestore, 'users', 'admin_default'), {
+                        username: 'admin',
+                        password: 'admin123',
+                        role: 'admin'
+                    });
+                    console.log('Admin creado.');
+                }
+
+                // Usuario estándar (contraseña = usuario)
+                const qUser = query(usersRef, where('username', '==', 'user'));
+                const snapUser = await getDocs(qUser);
+                if (snapUser.empty) {
+                    await setDoc(doc(firestore, 'users', 'user_demo'), {
+                        username: 'user',
+                        password: 'user',
+                        role: 'user'
+                    });
+                    console.log('Usuario user creado con contraseña "user".');
+                } else {
+                    // Asegurar que la contraseña es 'user'
+                    snapUser.forEach(async (docSnap) => {
+                        await setDoc(docSnap.ref, { password: 'user' }, { merge: true });
+                        console.log('Contraseña de user actualizada a "user".');
+                    });
+                }
+            } catch (e) {
+                console.error('Error creando usuarios de prueba:', e);
+            }
+        }
+
+        async function login(username, password) {
+            try {
+                const usersRef = collection(firestore, 'users');
+                const q = query(usersRef, where('username', '==', username));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    loginError.textContent = 'Usuario no encontrado. Contacta con el administrador.';
+                    return false;
+                }
+                let userData = null;
+                snap.forEach(doc => {
+                    userData = doc.data();
+                });
+                if (userData.password !== password) {
+                    loginError.textContent = 'Contraseña incorrecta.';
+                    return false;
+                }
+                currentUser = { username: userData.username, role: userData.role };
+                loginError.textContent = '';
+                return true;
+            } catch (e) {
+                console.error('Error en login:', e);
+                let msg = 'Error de conexión: ';
+                if (e.code === 'permission-denied') {
+                    msg += 'Permisos insuficientes. Revisa las reglas de Firestore.';
+                } else {
+                    msg += e.message;
+                }
+                loginError.textContent = msg;
+                return false;
+            }
+        }
+
+        function logout() {
+            cancelActiveDrag();
+            cancelPending();
+            currentUser = null;
+            appContent.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            loginUsername.value = '';
+            loginPassword.value = '';
+            loginError.textContent = '';
+            loginError.className = 'login-error';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const normBtn = document.querySelector('[data-tab="normativa"]');
+            if (normBtn) normBtn.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-normativa').classList.add('active');
+            // Cancelar cualquier reordenación de pestañas y quitar manijas/cursor
+            cancelActiveTabDrag();
+            cancelPendingTabDrag();
+            closeMoveMenu();
+            closeTabMgmt();
+            document.body.classList.remove('is-admin');
+            // Dejar de escuchar las preferencias de pestañas del usuario salido
+            if (prefsUnsub) { try { prefsUnsub(); } catch (err) { /* no crítico */ } }
+            prefsUnsub = null;
+            prefsListeningFor = null;
+            cachedHiddenTabs = {};
+            // Reconstruir la tira y los paneles sin controles de admin
+            // (oculta la pestaña Usuarios, el botón "+" y los botones de añadir)
+            rebuildTabsAndPanels();
+            updateTabGrips();
+            // Volver la tira de pestañas al inicio
+            tabsNav.scrollTo({ left: 0, behavior: 'smooth' });
+        }
+
+        function applyRole(role) {
+            // Cursor de arrastre y manijas de las pestañas (solo admin)
+            document.body.classList.toggle('is-admin', role === 'admin');
+            // Cargar las preferencias de pestañas (ocultas/mostradas) de este usuario
+            listenUserPrefs();
+            if (role === 'admin') {
+                userRoleDisplay.textContent = 'Administrador';
+                loadUsers();
+            } else {
+                userRoleDisplay.textContent = 'Usuario';
+                if (document.getElementById('panel-usuarios').classList.contains('active')) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-tab="normativa"]').classList.add('active');
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById('panel-normativa').classList.add('active');
+                }
+            }
+            // Reconstruir pestañas y paneles según el rol (muestra/oculta Usuarios,
+            // el botón "+", los botones de añadir y las herramientas de sección)
+            rebuildTabsAndPanels();
+            updateTabGrips();
+        }
+
+        // ---------- Funciones de renderizado de enlaces ----------
+        function renderList(container, tabKey) {
+            // Si hay un arrastre en curso o pendiente, cancelarlo antes de redibujar
+            if (dnd.active) cancelActiveDrag();
+            cancelPending();
+
+            const data = cachedData[tabKey];
+            container.innerHTML = '';
+
+            if (!data) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay enlaces guardados en <strong>${escapeHtml(getTabName(tabKey))}</strong>.</p>
+                        <p style="font-size:0.85rem; margin-top:0.3rem;">Usa el botón <strong>“Añadir enlace”</strong> para comenzar.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Convertir a array de [key, item] y ordenar por order (si existe)
+            let entries = Object.entries(data);
+            entries.sort((a, b) => {
+                const orderA = a[1].order !== undefined ? a[1].order : 0;
+                const orderB = b[1].order !== undefined ? b[1].order : 0;
+                return orderA - orderB;
+            });
+
+            const isAdmin = currentUser && currentUser.role === 'admin';
+
+            for (const [index, [key, item]] of entries.entries()) {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                if (isAdmin) {
+                    card.classList.add('draggable');
+                }
+                card.dataset.key = key;
+                card.dataset.tab = tabKey;
+
+                // Controles de reordenación: manija + flechas ▲▼ (solo admin)
+                let upArrow = null;
+                let downArrow = null;
+                if (isAdmin) {
+                    const controls = document.createElement('div');
+                    controls.className = 'drag-controls';
+
+                    const handle = document.createElement('span');
+                    handle.className = 'drag-handle';
+                    handle.title = 'Arrastra para reordenar';
+                    handle.innerHTML = '<i class="fas fa-grip-vertical"></i>';
+
+                    upArrow = document.createElement('button');
+                    upArrow.type = 'button';
+                    upArrow.className = 'btn-arrow';
+                    upArrow.title = 'Subir';
+                    upArrow.setAttribute('aria-label', 'Subir');
+                    upArrow.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                    upArrow.disabled = index === 0; // sin tarjeta por encima
+                    upArrow.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        moveCardByArrow(card, -1);
+                    });
+
+                    downArrow = document.createElement('button');
+                    downArrow.type = 'button';
+                    downArrow.className = 'btn-arrow';
+                    downArrow.title = 'Bajar';
+                    downArrow.setAttribute('aria-label', 'Bajar');
+                    downArrow.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                    downArrow.disabled = index === entries.length - 1; // sin tarjeta por debajo
+                    downArrow.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        moveCardByArrow(card, 1);
+                    });
+
+                    const arrows = document.createElement('div');
+                    arrows.className = 'drag-arrows';
+                    arrows.appendChild(upArrow);
+                    arrows.appendChild(downArrow);
+
+                    controls.appendChild(handle);
+                    controls.appendChild(arrows);
+                    card.appendChild(controls);
+                }
+
+                const info = document.createElement('div');
+                info.className = 'item-info';
+
+                // Título como enlace - desactivar arrastre en el enlace para que no interfiera
+                const titleLink = document.createElement('a');
+                titleLink.className = 'item-title-link';
+                titleLink.href = item.url || '#';
+                titleLink.target = '_blank';
+                titleLink.rel = 'noopener noreferrer';
+                const ytBadge = isYouTubeUrl(item.url)
+                    ? ' <i class="fab fa-youtube yt-badge" title="Enlace de YouTube"></i>'
+                    : '';
+                titleLink.innerHTML = `${item.title || 'Sin título'}${ytBadge} <i class="fas fa-external-link-alt"></i>`;
+                titleLink.draggable = false; // Evita que el enlace capture el drag
+                info.appendChild(titleLink);
+
+                const actions = document.createElement('div');
+                actions.className = 'item-actions';
+
+                // Botón editar (solo admin)
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-icon' + (isAdmin ? '' : ' hidden-btn');
+                editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                editBtn.setAttribute('aria-label', 'Editar');
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isAdmin) return;
+                    openModalForEdit(tabKey, key, item);
+                });
+
+                // Botón eliminar (solo admin)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-icon danger' + (isAdmin ? '' : ' hidden-btn');
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.setAttribute('aria-label', 'Eliminar');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isAdmin) return;
+                    if (confirm(`¿Eliminar “${item.title || 'este enlace'}”?`)) {
+                        const itemRef = ref(database, `${tabKey}/${key}`);
+                        remove(itemRef).catch((err) => {
+                            console.error('Error al eliminar:', err);
+                            alert('No se pudo eliminar el elemento.');
+                        });
+                    }
+                });
+
+                // Botón mover a otra sección (solo admin)
+                const moveBtn = document.createElement('button');
+                moveBtn.className = 'btn-icon move-btn' + (isAdmin ? '' : ' hidden-btn');
+                moveBtn.innerHTML = '<i class="fas fa-folder-open"></i>';
+                moveBtn.setAttribute('aria-label', 'Mover a otra sección');
+                moveBtn.title = 'Mover a otra sección';
+                moveBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isAdmin) return;
+                    if (!moveMenu.hidden && moveMenuCard === card) {
+                        closeMoveMenu();
+                    } else {
+                        openMoveMenu(card, moveBtn);
+                    }
+                });
+
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                actions.appendChild(moveBtn);
+
+                card.appendChild(info);
+                card.appendChild(actions);
+                container.appendChild(card);
+            }
+        }
+
+        // ---------- Construcción dinámica de pestañas y paneles ----------
+        // Genera los botones de pestaña (contenido + Usuarios + botón "+") y los
+        // paneles de contenido a partir del registro de secciones. Se ejecuta al
+        // iniciar, al cambiar de rol y cuando cambian las secciones en Firebase.
+        let rebuildQueued = false;
+
+        function rebuildTabsAndPanels() {
+            if (!tabsNav || !panelsHost) return;
+            // No reconstruir en mitad de un arrastre; se pospone a su fin
+            if (dnd.active || dnd.pending || tabDnd.active || tabDnd.pending) {
+                rebuildQueued = true;
+                return;
+            }
+            rebuildQueued = false;
+
+            const admin = isAdminUser();
+            const keys = sortedContentKeys();
+
+            const prevActive = tabsNav.querySelector('.tab-btn.active');
+            let activeKey = prevActive ? prevActive.dataset.tab : null;
+            if (activeKey === 'usuarios' && !admin) activeKey = null;
+            if (activeKey !== 'usuarios' && (!activeKey || !keys.includes(activeKey))) activeKey = keys[0];
+
+            tabsNav.innerHTML = '';
+            panelsHost.innerHTML = '';
+
+            keys.forEach((key) => {
+                const name = escapeHtml(getTabName(key));
+                const icon = getTabIcon(key);
+                const isActive = key === activeKey;
+
+                // Botón de pestaña
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'tab-btn' + (isActive ? ' active' : '');
+                btn.dataset.tab = key;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                btn.innerHTML = `<i class="fas ${icon}"></i> ${name}`;
+                if (admin) {
+                    const grip = document.createElement('i');
+                    grip.className = 'fas fa-grip-vertical tab-grip';
+                    grip.setAttribute('aria-hidden', 'true');
+                    btn.insertBefore(grip, btn.firstChild);
+                }
+                tabsNav.appendChild(btn);
+
+                // Panel de contenido
+                const section = document.createElement('section');
+                section.className = 'tab-panel' + (isActive ? ' active' : '');
+                section.id = `panel-${key}`;
+                section.setAttribute('role', 'tabpanel');
+
+                const header = document.createElement('div');
+                header.className = 'panel-header';
+                const h2 = document.createElement('h2');
+                h2.innerHTML = `<i class="fas ${icon}"></i> ${name}`;
+                header.appendChild(h2);
+
+                // Herramientas de sección (solo secciones creadas por el admin)
+                if (admin && customTabs[key]) {
+                    const tools = document.createElement('span');
+                    tools.className = 'tab-admin-tools';
+                    tools.innerHTML = `
+                        <button type="button" class="btn-icon" data-edit-tab="${key}" aria-label="Renombrar sección" title="Renombrar sección"><i class="fas fa-pen"></i></button>
+                        <button type="button" class="btn-icon danger" data-del-tab="${key}" aria-label="Eliminar sección" title="Eliminar sección"><i class="fas fa-trash-alt"></i></button>`;
+                    header.appendChild(tools);
+                }
+
+                if (admin) {
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'btn-add';
+                    addBtn.dataset.modal = key;
+                    addBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Añadir enlace';
+                    header.appendChild(addBtn);
+                }
+
+                const list = document.createElement('div');
+                list.className = 'items-list';
+                list.id = `list-${key}`;
+
+                section.appendChild(header);
+                section.appendChild(list);
+                panelsHost.appendChild(section);
+            });
+
+            // Pestaña Usuarios (solo admin)
+            const uBtn = document.createElement('button');
+            uBtn.type = 'button';
+            uBtn.className = 'tab-btn' + (admin ? '' : ' hidden-tab') + (activeKey === 'usuarios' ? ' active' : '');
+            uBtn.dataset.tab = 'usuarios';
+            uBtn.id = 'tabUsuarios';
+            uBtn.setAttribute('role', 'tab');
+            uBtn.setAttribute('aria-selected', activeKey === 'usuarios' ? 'true' : 'false');
+            uBtn.innerHTML = '<i class="fas fa-users-cog"></i> Usuarios';
+            if (admin) {
+                const uGrip = document.createElement('i');
+                uGrip.className = 'fas fa-grip-vertical tab-grip';
+                uGrip.setAttribute('aria-hidden', 'true');
+                uBtn.insertBefore(uGrip, uBtn.firstChild);
+            }
+            tabsNav.appendChild(uBtn);
+
+            // Botón "+" para crear secciones (solo admin)
+            const addTabBtn = document.createElement('button');
+            addTabBtn.type = 'button';
+            addTabBtn.className = 'tab-add' + (admin ? '' : ' hidden-tab');
+            addTabBtn.id = 'tabAddSection';
+            addTabBtn.title = 'Añadir sección';
+            addTabBtn.setAttribute('aria-label', 'Añadir sección');
+            addTabBtn.innerHTML = '<i class="fas fa-plus"></i>';
+            tabsNav.appendChild(addTabBtn);
+
+            // Botón de gestión de pestañas (ocultar/mostrar; todos los roles)
+            const mgmtBtn = document.createElement('button');
+            mgmtBtn.type = 'button';
+            mgmtBtn.className = 'tab-add tab-mgmt';
+            mgmtBtn.id = 'tabMgmtBtn';
+            mgmtBtn.title = 'Gestionar pestañas';
+            mgmtBtn.setAttribute('aria-label', 'Gestionar pestañas');
+            mgmtBtn.innerHTML = '<i class="fas fa-sliders-h"></i>';
+            tabsNav.appendChild(mgmtBtn);
+
+            // Aplicar las pestañas que este usuario tiene ocultas y validar la activa
+            applyHiddenTabs();
+            renderAllLists();
+            updateTabsArrows();
+        }
+
+        function renderAllLists() {
+            getContentTabKeys().forEach((key) => {
+                const container = document.getElementById(`list-${key}`);
+                if (container) renderList(container, key);
+            });
+        }
+
+        // ---------- Mover una tarjeta a otra sección (solo admin) ----------
+        // Abre un pequeño menú flotante junto al botón con el resto de secciones;
+        // al elegir una, el enlace se recoloca en esa lista (misma clave) al final
+        // y se borra del origen, todo en una única actualización atómica.
+        let moveMenuCard = null;
+
+        function openMoveMenu(card, anchor) {
+            if (!isAdminUser() || dnd.active || dnd.pending || tabDnd.active || tabDnd.pending) return;
+            if (!card || !card.isConnected) return;
+            moveMenuCard = card;
+            moveMenu.innerHTML = '';
+
+            const title = document.createElement('div');
+            title.className = 'move-menu-title';
+            title.textContent = 'Mover a…';
+            moveMenu.appendChild(title);
+
+            const srcTab = card.dataset.tab;
+            const targets = getContentTabKeys().filter((k) => k !== srcTab);
+            if (targets.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'move-menu-empty';
+                empty.textContent = 'No hay otras secciones';
+                moveMenu.appendChild(empty);
+            }
+            targets.forEach((k) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'move-menu-item';
+                b.innerHTML = `<i class="fas ${getTabIcon(k)}"></i> ${escapeHtml(getTabName(k))}`;
+                b.addEventListener('click', () => {
+                    const c = moveMenuCard;
+                    closeMoveMenu();
+                    moveCardToTab(c, k);
+                });
+                moveMenu.appendChild(b);
+            });
+
+            moveMenu.hidden = false;
+            const r = anchor.getBoundingClientRect();
+            const mw = moveMenu.offsetWidth;
+            const mh = moveMenu.offsetHeight;
+            let left = Math.min(r.left, window.innerWidth - mw - 10);
+            let top = r.bottom + 6;
+            if (top + mh > window.innerHeight - 8) top = r.top - mh - 6;
+            moveMenu.style.left = `${Math.max(8, left)}px`;
+            moveMenu.style.top = `${Math.max(8, top)}px`;
+        }
+
+        function closeMoveMenu() {
+            moveMenu.hidden = true;
+            moveMenuCard = null;
+        }
+
+        function moveCardToTab(card, targetTab) {
+            if (!isAdminUser() || !card) return;
+            const srcTab = card.dataset.tab;
+            const itemKey = card.dataset.key;
+            if (!srcTab || !itemKey || srcTab === targetTab) return;
+            const srcData = cachedData[srcTab];
+            const item = srcData ? srcData[itemKey] : null;
+            if (!item) return;
+            // El enlace se conserva íntegro y pasa al final de la lista destino
+            const targetData = cachedData[targetTab] || {};
+            const orders = Object.values(targetData)
+                .map((it) => (it && typeof it.order === 'number' ? it.order : 0));
+            const maxOrder = orders.length > 0 ? Math.max(...orders) + 1 : 0;
+            const updates = {};
+            updates[`${targetTab}/${itemKey}`] = { title: item.title || '', url: item.url || '', order: maxOrder };
+            updates[`${srcTab}/${itemKey}`] = null; // borrar del origen
+            update(ref(database), updates)
+                .then(() => {
+                    if (typeof navigator.vibrate === 'function') navigator.vibrate(10);
+                })
+                .catch((err) => {
+                    console.error('Error al mover el enlace:', err);
+                    alert('No se pudo mover el enlace a la sección elegida.');
+                });
+        }
+
+        // Cerrar el menú al hacer clic fuera, desplazar la página o redimensionar
+        document.addEventListener('click', (e) => {
+            if (!moveMenu.hidden && !e.target.closest('#moveMenu')) closeMoveMenu();
+        });
+        window.addEventListener('scroll', closeMoveMenu, true);
+        window.addEventListener('resize', closeMoveMenu);
+
+        // ---------- Visibilidad de pestañas por usuario (ocultar/mostrar) ----------
+        // Cada usuario puede ocultar secciones de SU vista; la preferencia se
+        // guarda en Firebase (userPrefs/<usuario>/hiddenTabs) y se aplica en
+        // cuanto el usuario inicia sesión, en cualquiera de sus dispositivos.
+
+        function listenUserPrefs() {
+            const username = currentUser ? currentUser.username : null;
+            if (!username) return;
+            if (prefsListeningFor === username) return;
+            if (prefsUnsub) { try { prefsUnsub(); } catch (err) { /* no crítico */ } }
+            prefsUnsub = null;
+            prefsListeningFor = username;
+            cachedHiddenTabs = {};
+            const path = `userPrefs/${sanitizeUserPath(username)}/hiddenTabs`;
+            prefsUnsub = onValue(ref(database, path), (snapshot) => {
+                cachedHiddenTabs = snapshot.val() || {};
+                applyHiddenTabs();
+                if (tabMgmtOverlay.classList.contains('open')) refreshTabMgmtStates();
+            }, (error) => {
+                console.error('Error al escuchar tus preferencias de pestañas:', error);
+            });
+        }
+
+        function persistHiddenTabs() {
+            if (!currentUser) return;
+            const clean = {};
+            Object.keys(cachedHiddenTabs).forEach((k) => {
+                if (cachedHiddenTabs[k]) clean[k] = true;
+            });
+            const path = `userPrefs/${sanitizeUserPath(currentUser.username)}/hiddenTabs`;
+            set(ref(database, path), clean).catch((err) => {
+                console.error('Error al guardar tus preferencias de pestañas:', err);
+                alert('No se pudo guardar tu preferencia de pestañas.');
+            });
+        }
+
+        // Aplica (o quita) la clase hidden-tab de cada pestaña según las
+        // preferencias del usuario conectado
+        function applyHiddenTabs() {
+            if (!tabsNav) return;
+            const hidden = cachedHiddenTabs || {};
+            const admin = isAdminUser();
+            tabsNav.querySelectorAll('.tab-btn').forEach((btn) => {
+                const key = btn.dataset.tab;
+                let hide = !!hidden[key];
+                if (key === 'usuarios' && !admin) hide = true;
+                btn.classList.toggle('hidden-tab', hide);
+            });
+            // Si la pestaña activa quedó oculta, activa la primera visible
+            if (!dnd.active && !dnd.pending && !tabDnd.active && !tabDnd.pending) {
+                ensureVisibleActiveTab();
+            }
+            updateTabsArrows();
+        }
+
+        function ensureVisibleActiveTab() {
+            const active = tabsNav.querySelector('.tab-btn.active');
+            if (active && !active.classList.contains('hidden-tab')) return;
+            const firstVisible = tabsNav.querySelector('.tab-btn:not(.hidden-tab)');
+            if (firstVisible) firstVisible.click();
+        }
+
+        // Panel de gestión de pestañas: un interruptor por sección
+        function openTabMgmt() {
+            if (!currentUser) return;
+            const admin = isAdminUser();
+            const hidden = cachedHiddenTabs || {};
+            tabMgmtList.innerHTML = '';
+            const keys = sortedContentKeys();
+            if (admin) keys.push('usuarios');
+            keys.forEach((key) => {
+                if (key === 'usuarios' && !admin) return;
+                const checked = !hidden[key];
+                const row = document.createElement('div');
+                row.className = 'tab-mgmt-row';
+
+                const name = document.createElement('span');
+                name.className = 'tab-mgmt-name';
+                name.innerHTML = `<i class="fas ${getTabIcon(key)}"></i> ${escapeHtml(getTabName(key))}`;
+
+                const label = document.createElement('label');
+                label.className = 'tab-switch';
+                label.title = checked ? 'Ocultar pestaña' : 'Mostrar pestaña';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.checked = checked;
+                cb.setAttribute('aria-label', `Mostrar la sección ${getTabName(key)}`);
+                cb.addEventListener('change', () => {
+                    if (cb.checked) delete cachedHiddenTabs[key];
+                    else cachedHiddenTabs[key] = true;
+                    persistHiddenTabs();
+                    applyHiddenTabs();
+                    refreshTabMgmtStates();
+                });
+                const slider = document.createElement('span');
+                slider.className = 'tab-switch-slider';
+                label.appendChild(cb);
+                label.appendChild(slider);
+
+                row.appendChild(name);
+                row.appendChild(label);
+                tabMgmtList.appendChild(row);
+            });
+            refreshTabMgmtStates();
+            tabMgmtOverlay.classList.add('open');
+        }
+
+        // No deja ocultar la última pestaña visible (el interruptor se desactiva)
+        function refreshTabMgmtStates() {
+            const cbs = Array.from(tabMgmtList.querySelectorAll('input[type="checkbox"]'));
+            const visible = cbs.filter((cb) => cb.checked);
+            cbs.forEach((cb) => { cb.disabled = cb.checked && visible.length <= 1; });
+        }
+
+        function closeTabMgmt() {
+            tabMgmtOverlay.classList.remove('open');
+        }
+
+        // ---------- Drag & Drop para reordenar tarjetas (solo admin) ----------
+        // Sistema propio basado en Pointer Events: funciona con ratón y pantallas
+        // táctiles. Al soltar, la tarjeta se INSERTA en la posición destino y el
+        // resto se desplaza; el nuevo orden se guarda en Firebase automáticamente.
+
+        const dnd = {
+            active: false,      // hay un arrastre en curso
+            pending: null,      // { card, pointerId, startX, startY, isTouch, timer }
+            pointerId: null,    // pointer activo durante el arrastre
+            card: null,         // tarjeta arrastrada
+            list: null,         // lista contenedora
+            tab: null,          // pestaña/sección ('normativa', 'exito', 'documentos')
+            moved: false,       // la tarjeta cambió de posición en el DOM
+            lastY: null,        // última posición Y del puntero (auto-scroll)
+            suppressClick: false, // evita clics fantasma al soltar
+            rafId: null         // bucle de auto-scroll
+        };
+
+        const LONG_PRESS_MS = 250;      // pulsación larga para iniciar arrastre táctil
+        const MOUSE_THRESHOLD_PX = 6;   // movimiento mínimo para arrastrar con ratón
+        const TOUCH_CANCEL_PX = 12;     // movimiento que cancela la pulsación larga (scroll)
+        const EDGE_SCROLL_MARGIN = 80;  // margen de auto-scroll cerca de los bordes
+        const EDGE_SCROLL_SPEED = 12;   // velocidad de auto-scroll (px por frame)
+
+        function isAdminUser() {
+            return !!(currentUser && currentUser.role === 'admin');
+        }
+
+        // Devuelve la tarjeta sobre cuya mitad superior está el puntero
+        // (la posición de inserción va justo antes de esa tarjeta).
+        function getDragAfterElement(container, y) {
+            const cards = Array.from(container.querySelectorAll('.item-card:not(.dragging)'));
+            return cards.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset, element: child };
+                }
+                return closest;
+            }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+        }
+
+        // Mueve la tarjeta arrastrada dentro de la lista según la posición del puntero
+        function moveDraggedCard(clientY) {
+            if (!dnd.list || !dnd.card) return;
+            const after = getDragAfterElement(dnd.list, clientY);
+            if (after) {
+                if (after !== dnd.card && dnd.card.nextElementSibling !== after) {
+                    dnd.list.insertBefore(dnd.card, after);
+                    dnd.moved = true;
+                }
+            } else if (dnd.list.lastElementChild !== dnd.card) {
+                dnd.list.appendChild(dnd.card);
+                dnd.moved = true;
+            }
+        }
+
+        // Auto-scroll cuando se arrastra cerca de los bordes de la ventana
+        function autoScrollFrame() {
+            if (!dnd.active) { dnd.rafId = null; return; }
+            if (dnd.lastY !== null) {
+                if (dnd.lastY < EDGE_SCROLL_MARGIN) {
+                    window.scrollBy(0, -EDGE_SCROLL_SPEED);
+                    moveDraggedCard(dnd.lastY);
+                } else if (dnd.lastY > window.innerHeight - EDGE_SCROLL_MARGIN) {
+                    window.scrollBy(0, EDGE_SCROLL_SPEED);
+                    moveDraggedCard(dnd.lastY);
+                }
+            }
+            dnd.rafId = requestAnimationFrame(autoScrollFrame);
+        }
+
+        function startAutoScroll() {
+            if (dnd.rafId === null) dnd.rafId = requestAnimationFrame(autoScrollFrame);
+        }
+
+        function stopAutoScroll() {
+            if (dnd.rafId !== null) {
+                cancelAnimationFrame(dnd.rafId);
+                dnd.rafId = null;
+            }
+        }
+
+        function startDrag(card, pointerId) {
+            if (!card.isConnected) return;
+            dnd.active = true;
+            dnd.pointerId = pointerId;
+            dnd.card = card;
+            dnd.list = card.parentElement;
+            dnd.tab = card.dataset.tab;
+            dnd.moved = false;
+            dnd.lastY = null;
+            card.classList.add('dragging');
+            document.body.classList.add('dnd-active');
+            startAutoScroll();
+            try { card.setPointerCapture(pointerId); } catch (err) { /* no crítico */ }
+            if (typeof navigator.vibrate === 'function') navigator.vibrate(10);
+        }
+
+        function endDrag() {
+            const { card, list, tab, moved } = dnd;
+            dnd.active = false;
+            dnd.card = null;
+            dnd.list = null;
+            dnd.tab = null;
+            dnd.pointerId = null;
+            dnd.moved = false;
+            dnd.lastY = null;
+            stopAutoScroll();
+            if (card) card.classList.remove('dragging');
+            document.body.classList.remove('dnd-active');
+            // Evitar clics fantasma sobre enlaces justo después de soltar
+            dnd.suppressClick = true;
+            setTimeout(() => { dnd.suppressClick = false; }, 350);
+            if (moved && list && tab) persistOrderFromDOM(list, tab);
+            flushQueuedRebuild();
+        }
+
+        // Cancela un arrastre activo y restaura el último orden guardado
+        function cancelActiveDrag() {
+            if (!dnd.active) return;
+            const { card, list, tab } = dnd;
+            dnd.active = false;
+            dnd.card = null;
+            dnd.list = null;
+            dnd.tab = null;
+            dnd.pointerId = null;
+            dnd.moved = false;
+            dnd.lastY = null;
+            stopAutoScroll();
+            if (card) card.classList.remove('dragging');
+            document.body.classList.remove('dnd-active');
+            if (list && tab) renderList(list, tab);
+            flushQueuedRebuild();
+        }
+
+        function cancelPending() {
+            if (dnd.pending && dnd.pending.timer) clearTimeout(dnd.pending.timer);
+            dnd.pending = null;
+            flushQueuedRebuild();
+        }
+
+        // Reconstruye pestañas/paneles si se pospuso por un arrastre en curso
+        function flushQueuedRebuild() {
+            if (rebuildQueued && !dnd.active && !dnd.pending && !tabDnd.active && !tabDnd.pending) {
+                rebuildTabsAndPanels();
+            }
+        }
+
+        // Guarda en Firebase el orden actual de las tarjetas del DOM (0, 1, 2...)
+        function persistOrderFromDOM(listEl, tabKey) {
+            const updates = {};
+            listEl.querySelectorAll('.item-card').forEach((card, index) => {
+                const key = card.dataset.key;
+                if (key) updates[`${tabKey}/${key}/order`] = index;
+            });
+            if (Object.keys(updates).length === 0) return;
+            update(ref(database), updates)
+                .catch((err) => {
+                    console.error('Error al guardar el nuevo orden:', err);
+                    alert('No se pudo guardar el nuevo orden.');
+                    renderList(listEl, tabKey); // revertir al último orden guardado
+                });
+        }
+
+        // Mueve una tarjeta una posición arriba (-1) o abajo (1) con las flechas ▲▼
+        function moveCardByArrow(card, direction) {
+            if (!isAdminUser() || dnd.active) return;
+            const list = card.parentElement;
+            const tab = card.dataset.tab;
+            if (!list || !tab) return;
+            if (direction < 0 && card.previousElementSibling) {
+                list.insertBefore(card, card.previousElementSibling);
+            } else if (direction > 0 && card.nextElementSibling) {
+                list.insertBefore(card.nextElementSibling, card);
+            } else {
+                return; // ya está en un extremo
+            }
+            persistOrderFromDOM(list, tab);
+        }
+
+        // Inicio del arrastre (delegado en cada lista)
+        function onPointerDown(e) {
+            if (!isAdminUser() || dnd.active || dnd.pending) return;
+            if (e.button !== undefined && e.button !== 0) return; // solo botón principal
+            const card = e.target.closest('.item-card');
+            if (!card || !card.classList.contains('draggable')) return;
+            // No iniciar arrastre desde controles interactivos de la tarjeta
+            if (e.target.closest('a, button, input, select, textarea')) return;
+
+            const isTouch = e.pointerType === 'touch';
+            const pending = {
+                card,
+                pointerId: e.pointerId,
+                startX: e.clientX,
+                startY: e.clientY,
+                isTouch,
+                timer: null
+            };
+
+            // En pantallas táctiles se requiere pulsación larga para arrastrar
+            // (así no interfiere con el scroll de la página)
+            if (isTouch) {
+                pending.timer = setTimeout(() => {
+                    if (dnd.pending === pending) {
+                        dnd.pending = null;
+                        startDrag(card, pending.pointerId);
+                    }
+                }, LONG_PRESS_MS);
+            }
+            dnd.pending = pending;
+        }
+
+        function onPointerMove(e) {
+            if (dnd.active) {
+                if (e.pointerId !== dnd.pointerId) return;
+                dnd.lastY = e.clientY;
+                moveDraggedCard(e.clientY);
+                return;
+            }
+            if (!dnd.pending || e.pointerId !== dnd.pending.pointerId) return;
+            const dist = Math.hypot(e.clientX - dnd.pending.startX, e.clientY - dnd.pending.startY);
+            if (dnd.pending.isTouch) {
+                if (dist > TOUCH_CANCEL_PX) cancelPending(); // era un gesto de scroll
+            } else if (dist > MOUSE_THRESHOLD_PX) {
+                const card = dnd.pending.card;
+                cancelPending();
+                startDrag(card, e.pointerId);
+            }
+        }
+
+        function onPointerUp(e) {
+            if (dnd.active) {
+                if (e.pointerId === dnd.pointerId) endDrag();
+                return;
+            }
+            if (dnd.pending && e.pointerId === dnd.pending.pointerId) cancelPending();
+        }
+
+        function onPointerCancel(e) {
+            if (dnd.active && e.pointerId === dnd.pointerId) cancelActiveDrag();
+            cancelPending();
+        }
+
+        // Delegación: iniciar arrastre desde cualquier lista (los paneles son dinámicos)
+        document.addEventListener('pointerdown', onPointerDown);
+
+        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointerup', onPointerUp);
+        document.addEventListener('pointercancel', onPointerCancel);
+
+        // Bloquear el scroll táctil de la página durante el arrastre
+        document.addEventListener('touchmove', (e) => {
+            if (dnd.active || tabDnd.active) e.preventDefault();
+        }, { passive: false });
+
+        // Evitar menús contextuales en pulsaciones largas táctiles
+        document.addEventListener('contextmenu', (e) => {
+            if (dnd.active || tabDnd.active || (dnd.pending && dnd.pending.isTouch) || (tabDnd.pending && tabDnd.pending.isTouch)) e.preventDefault();
+        });
+
+        // Evitar el arrastre nativo del navegador (enlaces) dentro de las tarjetas
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.closest && (e.target.closest('.item-card') || e.target.closest('.tab-btn'))) e.preventDefault();
+        });
+
+        // Suprimir el clic generado justo después de soltar (tarjetas y pestañas)
+        document.addEventListener('click', (e) => {
+            if (dnd.suppressClick || tabDnd.suppressClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                dnd.suppressClick = false;
+                tabDnd.suppressClick = false;
+            }
+        }, true);
+
+        // ---------- Drag & Drop para reordenar las PESTAÑAS (solo admin) ----------
+        // Mismo modelo que las tarjetas: Pointer Events, pulsación larga en táctil,
+        // inserción en vivo y persistencia en Firebase (nodo "tabOrder") para que
+        // todos los usuarios vean las secciones en el mismo orden.
+
+        const tabDnd = {
+            active: false,
+            pending: null,      // { btn, pointerId, startX, startY, isTouch, timer }
+            pointerId: null,
+            btn: null,          // pestaña arrastrada
+            moved: false,
+            lastX: null,        // última posición X del puntero (auto-scroll de la tira)
+            suppressClick: false,
+            rafId: null
+        };
+
+        let cachedTabOrder = null; // { normativa: 0, exito: 1, ... } tal y como está en Firebase
+        const DEFAULT_TABS = ['normativa', 'exito', 'documentos', 'materiales'];
+
+        // Aplica a la tira el orden guardado (o el predeterminado si aún no hay)
+        function applyTabOrder() {
+            if (!tabsNav || tabDnd.active || tabDnd.pending) return;
+            const btns = Array.from(tabsNav.querySelectorAll('.tab-btn'));
+            const domPos = new Map(btns.map((b, i) => [b.dataset.tab, i]));
+            const rank = (key) => {
+                if (cachedTabOrder && typeof cachedTabOrder[key] === 'number') return cachedTabOrder[key];
+                const di = DEFAULT_TABS.indexOf(key);
+                if (di >= 0) return 100 + di;
+                return 200 + (domPos.get(key) || 0); // secciones nuevas al final
+            };
+            btns.sort((a, b) => rank(a.dataset.tab) - rank(b.dataset.tab));
+            btns.forEach((b) => tabsNav.appendChild(b));
+            // Los botones "+" y de gestión siempre quedan al final de la tira
+            const addTabBtn = document.getElementById('tabAddSection');
+            if (addTabBtn) tabsNav.appendChild(addTabBtn);
+            const mgmtBtn = document.getElementById('tabMgmtBtn');
+            if (mgmtBtn) tabsNav.appendChild(mgmtBtn);
+            updateTabsArrows();
+        }
+
+        // Guarda en Firebase el orden actual de las pestañas del DOM
+        function persistTabOrderFromDOM() {
+            const order = {};
+            tabsNav.querySelectorAll('.tab-btn').forEach((btn, index) => {
+                order[btn.dataset.tab] = index;
+            });
+            set(ref(database, 'tabOrder'), order).catch((err) => {
+                console.error('Error al guardar el orden de las pestañas:', err);
+                alert('No se pudo guardar el nuevo orden de las pestañas.');
+                applyTabOrder(); // revertir al último orden guardado
+            });
+        }
+
+        // Añade o quita la manija de las pestañas según el rol
+        function updateTabGrips() {
+            if (!tabsNav) return;
+            const admin = isAdminUser();
+            tabsNav.querySelectorAll('.tab-btn').forEach((btn) => {
+                let grip = btn.querySelector('.tab-grip');
+                if (admin && !grip) {
+                    grip = document.createElement('i');
+                    grip.className = 'fas fa-grip-vertical tab-grip';
+                    grip.setAttribute('aria-hidden', 'true');
+                    btn.insertBefore(grip, btn.firstChild);
+                } else if (!admin && grip) {
+                    grip.remove();
+                }
+            });
+        }
+
+        // Devuelve la pestaña cuyo centro está justo a la derecha del puntero
+        // (la posición de inserción va justo antes de esa pestaña).
+        function getDragAfterTab(x) {
+            const btns = Array.from(tabsNav.querySelectorAll('.tab-btn:not(.tab-dragging)'));
+            return btns.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = x - box.left - box.width / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset, element: child };
+                }
+                return closest;
+            }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+        }
+
+        // Coloca la pestaña arrastrada según la posición horizontal del puntero
+        function moveDraggedTab(clientX) {
+            if (!tabDnd.btn) return;
+            const after = getDragAfterTab(clientX);
+            if (after) {
+                if (after !== tabDnd.btn && tabDnd.btn.nextElementSibling !== after) {
+                    tabsNav.insertBefore(tabDnd.btn, after);
+                    tabDnd.moved = true;
+                }
+            } else if (tabsNav.lastElementChild !== tabDnd.btn) {
+                tabsNav.appendChild(tabDnd.btn);
+                tabDnd.moved = true;
+            }
+        }
+
+        // Auto-scroll horizontal de la tira al arrastrar cerca de sus bordes
+        function tabAutoScrollFrame() {
+            if (!tabDnd.active) { tabDnd.rafId = null; return; }
+            if (tabDnd.lastX !== null) {
+                const rect = tabsNav.getBoundingClientRect();
+                const margin = 48;
+                if (tabDnd.lastX < rect.left + margin) {
+                    tabsNav.scrollLeft -= 10;
+                    moveDraggedTab(tabDnd.lastX);
+                } else if (tabDnd.lastX > rect.right - margin) {
+                    tabsNav.scrollLeft += 10;
+                    moveDraggedTab(tabDnd.lastX);
+                }
+            }
+            tabDnd.rafId = requestAnimationFrame(tabAutoScrollFrame);
+        }
+
+        function startTabAutoScroll() {
+            if (tabDnd.rafId === null) tabDnd.rafId = requestAnimationFrame(tabAutoScrollFrame);
+        }
+
+        function stopTabAutoScroll() {
+            if (tabDnd.rafId !== null) {
+                cancelAnimationFrame(tabDnd.rafId);
+                tabDnd.rafId = null;
+            }
+        }
+
+        function startTabDrag(btn, pointerId) {
+            if (!btn.isConnected) return;
+            tabDnd.active = true;
+            tabDnd.pointerId = pointerId;
+            tabDnd.btn = btn;
+            tabDnd.moved = false;
+            tabDnd.lastX = null;
+            btn.classList.add('tab-dragging');
+            document.body.classList.add('tab-dnd-active');
+            startTabAutoScroll();
+            try { btn.setPointerCapture(pointerId); } catch (err) { /* no crítico */ }
+            if (typeof navigator.vibrate === 'function') navigator.vibrate(10);
+        }
+
+        function endTabDrag() {
+            const { btn, moved } = tabDnd;
+            tabDnd.active = false;
+            tabDnd.btn = null;
+            tabDnd.pointerId = null;
+            tabDnd.moved = false;
+            tabDnd.lastX = null;
+            stopTabAutoScroll();
+            if (btn) btn.classList.remove('tab-dragging');
+            document.body.classList.remove('tab-dnd-active');
+            // Evitar que el clic de "soltar" active otra sección
+            tabDnd.suppressClick = true;
+            setTimeout(() => { tabDnd.suppressClick = false; }, 350);
+            if (moved) persistTabOrderFromDOM();
+            flushQueuedRebuild();
+        }
+
+        // Cancela un arrastre activo y restaura el último orden guardado
+        function cancelActiveTabDrag() {
+            if (!tabDnd.active) return;
+            const { btn } = tabDnd;
+            tabDnd.active = false;
+            tabDnd.btn = null;
+            tabDnd.pointerId = null;
+            tabDnd.moved = false;
+            tabDnd.lastX = null;
+            stopTabAutoScroll();
+            if (btn) btn.classList.remove('tab-dragging');
+            document.body.classList.remove('tab-dnd-active');
+            applyTabOrder();
+            flushQueuedRebuild();
+        }
+
+        function cancelPendingTabDrag() {
+            if (tabDnd.pending && tabDnd.pending.timer) clearTimeout(tabDnd.pending.timer);
+            tabDnd.pending = null;
+            flushQueuedRebuild();
+        }
+
+        function onTabPointerDown(e) {
+            if (!isAdminUser() || tabDnd.active || tabDnd.pending) return;
+            if (e.button !== undefined && e.button !== 0) return; // solo botón principal
+            const btn = e.target.closest('.tab-btn');
+            if (!btn || btn.classList.contains('hidden-tab')) return;
+
+            const isTouch = e.pointerType === 'touch';
+            const pending = {
+                btn,
+                pointerId: e.pointerId,
+                startX: e.clientX,
+                startY: e.clientY,
+                isTouch,
+                timer: null
+            };
+
+            // En pantallas táctiles se requiere pulsación larga para arrastrar
+            // (así no interfiere con el desplazamiento horizontal de la tira)
+            if (isTouch) {
+                pending.timer = setTimeout(() => {
+                    if (tabDnd.pending === pending) {
+                        tabDnd.pending = null;
+                        startTabDrag(btn, pending.pointerId);
+                    }
+                }, LONG_PRESS_MS);
+            }
+            tabDnd.pending = pending;
+        }
+
+        function onTabPointerMove(e) {
+            if (tabDnd.active) {
+                if (e.pointerId !== tabDnd.pointerId) return;
+                tabDnd.lastX = e.clientX;
+                moveDraggedTab(e.clientX);
+                return;
+            }
+            if (!tabDnd.pending || e.pointerId !== tabDnd.pending.pointerId) return;
+            const dist = Math.hypot(e.clientX - tabDnd.pending.startX, e.clientY - tabDnd.pending.startY);
+            if (tabDnd.pending.isTouch) {
+                if (dist > TOUCH_CANCEL_PX) cancelPendingTabDrag(); // era un gesto de scroll
+            } else if (dist > MOUSE_THRESHOLD_PX) {
+                const btn = tabDnd.pending.btn;
+                cancelPendingTabDrag();
+                startTabDrag(btn, e.pointerId);
+            }
+        }
+
+        function onTabPointerUp(e) {
+            if (tabDnd.active) {
+                if (e.pointerId === tabDnd.pointerId) endTabDrag();
+                return;
+            }
+            if (tabDnd.pending && e.pointerId === tabDnd.pending.pointerId) cancelPendingTabDrag();
+        }
+
+        function onTabPointerCancel(e) {
+            if (tabDnd.active && e.pointerId === tabDnd.pointerId) cancelActiveTabDrag();
+            cancelPendingTabDrag();
+        }
+
+        // Delegación: iniciar arrastre desde la tira de pestañas
+        tabsNav.addEventListener('pointerdown', onTabPointerDown);
+        document.addEventListener('pointermove', onTabPointerMove);
+        document.addEventListener('pointerup', onTabPointerUp);
+        document.addEventListener('pointercancel', onTabPointerCancel);
+
+        // ---------- Escuchar cambios en Firebase (enlaces) ----------
+        function listenToTab(tabKey) {
+            if (listenedTabs.has(tabKey)) return;
+            listenedTabs.add(tabKey);
+            const dbRef = ref(database, tabKey);
+            onValue(dbRef, (snapshot) => {
+                const data = snapshot.val();
+                cachedData[tabKey] = data;
+                // Renderizar usando los datos en caché (el contenedor se reconsulta:
+                // los paneles se reconstruyen dinámicamente)
+                const container = document.getElementById(`list-${tabKey}`);
+                if (container) renderList(container, tabKey);
+            }, (error) => {
+                console.error(`Error al escuchar cambios en ${tabKey}:`, error);
+                const container = document.getElementById(`list-${tabKey}`);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="color:#b13e3a;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error al conectar con Firebase.</p>
+                            <p style="font-size:0.85rem;">${error.message}</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // ---------- Funciones de gestión de usuarios ----------
+        async function loadUsers() {
+            try {
+                const usersRef = collection(firestore, 'users');
+                const snap = await getDocs(usersRef);
+                usersTableBody.innerHTML = '';
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const tr = document.createElement('tr');
+                    const usernameTd = document.createElement('td');
+                    usernameTd.textContent = data.username;
+                    const roleTd = document.createElement('td');
+                    const badge = document.createElement('span');
+                    badge.className = 'role-badge' + (data.role === 'admin' ? ' admin' : '');
+                    badge.textContent = data.role === 'admin' ? 'Administrador' : 'Usuario';
+                    roleTd.appendChild(badge);
+
+                    const actionsTd = document.createElement('td');
+                    actionsTd.style.textAlign = 'right';
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn-icon-sm danger';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                    deleteBtn.title = 'Eliminar usuario';
+                    deleteBtn.disabled = (data.username === currentUser.username);
+                    deleteBtn.style.opacity = (data.username === currentUser.username) ? '0.5' : '1';
+                    deleteBtn.addEventListener('click', async () => {
+                        if (data.username === currentUser.username) {
+                            alert('No puedes eliminarte a ti mismo.');
+                            return;
+                        }
+                        if (confirm(`¿Eliminar al usuario ${data.username}?`)) {
+                            try {
+                                await deleteDoc(doc.ref);
+                                loadUsers();
+                            } catch (e) {
+                                console.error('Error al eliminar usuario:', e);
+                                alert('Error al eliminar usuario.');
+                            }
+                        }
+                    });
+                    actionsTd.appendChild(deleteBtn);
+
+                    tr.appendChild(usernameTd);
+                    tr.appendChild(roleTd);
+                    tr.appendChild(actionsTd);
+                    usersTableBody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error('Error cargando usuarios:', e);
+                if (e.code === 'permission-denied') {
+                    usersTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#b13e3a;">⚠️ Sin permisos para leer usuarios. Revisa reglas de Firestore.</td></tr>`;
+                }
+            }
+        }
+
+        async function addUser(username, password, role) {
+            try {
+                const usersRef = collection(firestore, 'users');
+                const q = query(usersRef, where('username', '==', username));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    alert('Ya existe un usuario con ese nombre.');
+                    return false;
+                }
+                const newDocRef = doc(collection(firestore, 'users'));
+                await setDoc(newDocRef, {
+                    username,
+                    password,
+                    role
+                });
+                loadUsers();
+                return true;
+            } catch (e) {
+                console.error('Error al agregar usuario:', e);
+                alert('Error al agregar usuario: ' + e.message);
+                return false;
+            }
+        }
+
+        // ---------- Funciones del modal de enlaces ----------
+        function openModalForNew(tab) {
+            if (currentUser.role !== 'admin') return;
+            currentTab = tab;
+            editingKey = null;
+            modalTitle.innerHTML = `<i class="fas fa-plus-circle"></i> Nuevo enlace · ${escapeHtml(getTabName(tab))}`;
+            inputTitle.value = '';
+            inputUrl.value = '';
+            modalOverlay.classList.add('open');
+            inputTitle.focus();
+        }
+
+        function openModalForEdit(tab, key, item) {
+            if (currentUser.role !== 'admin') return;
+            currentTab = tab;
+            editingKey = key;
+            modalTitle.innerHTML = `<i class="fas fa-pen"></i> Editar enlace · ${escapeHtml(getTabName(tab))}`;
+            inputTitle.value = item.title || '';
+            inputUrl.value = item.url || '';
+            modalOverlay.classList.add('open');
+            inputTitle.focus();
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('open');
+            editingKey = null;
+        }
+
+        // ---------- Funciones del modal de secciones (crear/renombrar pestañas) ----------
+        let tabModalEditingKey = null;
+
+        function openTabModalForCreate() {
+            if (!isAdminUser()) return;
+            tabModalEditingKey = null;
+            tabModalTitle.innerHTML = '<i class="fas fa-folder-plus"></i> Nueva sección';
+            inputTabName.value = '';
+            tabModalOverlay.classList.add('open');
+            inputTabName.focus();
+        }
+
+        function openTabModalForRename(key) {
+            if (!isAdminUser() || !customTabs[key]) return;
+            tabModalEditingKey = key;
+            tabModalTitle.innerHTML = '<i class="fas fa-pen"></i> Renombrar sección';
+            inputTabName.value = getTabName(key);
+            tabModalOverlay.classList.add('open');
+            inputTabName.focus();
+        }
+
+        function closeTabModal() {
+            tabModalOverlay.classList.remove('open');
+            tabModalEditingKey = null;
+        }
+
+        function saveTabModal() {
+            if (!isAdminUser()) return;
+            const name = inputTabName.value.trim();
+            if (!name) {
+                alert('Introduce un nombre para la sección.');
+                inputTabName.focus();
+                return;
+            }
+            if (name.length > 40) {
+                alert('El nombre no puede superar los 40 caracteres.');
+                inputTabName.focus();
+                return;
+            }
+            if (tabModalEditingKey) {
+                // Renombrar sección existente
+                set(ref(database, `tabs/${tabModalEditingKey}`), { name })
+                    .then(() => closeTabModal())
+                    .catch((err) => {
+                        console.error('Error al renombrar la sección:', err);
+                        alert('No se pudo renombrar la sección.');
+                    });
+            } else {
+                // Crear sección nueva (el listener de "tabs" la añadirá a la tira)
+                const key = slugifyTabName(name);
+                set(ref(database, `tabs/${key}`), { name })
+                    .then(() => closeTabModal())
+                    .catch((err) => {
+                        console.error('Error al crear la sección:', err);
+                        alert('No se pudo crear la sección.');
+                    });
+            }
+        }
+
+        // Elimina una sección creada por el admin (pestaña + sus enlaces)
+        function deleteCustomTab(key) {
+            if (!isAdminUser() || !customTabs[key]) return;
+            const count = cachedData[key] ? Object.keys(cachedData[key]).length : 0;
+            const msg = count > 0
+                ? `¿Eliminar la sección “${getTabName(key)}” y sus ${count} enlace(s)? Esta acción no se puede deshacer.`
+                : `¿Eliminar la sección “${getTabName(key)}”? Esta acción no se puede deshacer.`;
+            if (!confirm(msg)) return;
+            Promise.all([
+                remove(ref(database, key)),
+                remove(ref(database, `tabs/${key}`))
+            ]).then(() => {
+                if (cachedTabOrder) delete cachedTabOrder[key];
+            }).catch((err) => {
+                console.error('Error al eliminar la sección:', err);
+                alert('No se pudo eliminar la sección.');
+            });
+        }
+
+        function saveItem() {
+            if (currentUser.role !== 'admin') return;
+            const title = inputTitle.value.trim();
+            const url = inputUrl.value.trim();
+
+            if (!title) {
+                alert('Por favor, introduce un título.');
+                inputTitle.focus();
+                return;
+            }
+            if (!url) {
+                alert('Por favor, introduce una URL.');
+                inputUrl.focus();
+                return;
+            }
+            try {
+                new URL(url);
+            } catch (_) {
+                alert('La URL no es válida. Asegúrate de incluir "https://"');
+                inputUrl.focus();
+                return;
+            }
+
+            const dbRef = ref(database, currentTab);
+
+            if (editingKey) {
+                // Actualizar: usamos update() en lugar de set() para conservar
+                // el campo "order" de la tarjeta (posición en la lista)
+                const itemRef = ref(database, `${currentTab}/${editingKey}`);
+                update(itemRef, { title, url })
+                    .then(() => closeModal())
+                    .catch((err) => {
+                        console.error('Error al actualizar:', err);
+                        alert('No se pudo actualizar el elemento.');
+                    });
+            } else {
+                // Nuevo: calcular el máximo order actual
+                const data = cachedData[currentTab];
+                let maxOrder = 0;
+                if (data) {
+                    const orders = Object.values(data).map(item => item.order !== undefined ? item.order : 0);
+                    maxOrder = orders.length > 0 ? Math.max(...orders) + 1 : 0;
+                }
+                const payload = { title, url, order: maxOrder };
+                push(dbRef, payload)
+                    .then(() => closeModal())
+                    .catch((err) => {
+                        console.error('Error al guardar:', err);
+                        alert('No se pudo guardar el elemento.');
+                    });
+            }
+        }
+
+        // ---------- Eventos de login ----------
+        loginBtn.addEventListener('click', async () => {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+            if (!username || !password) {
+                loginError.textContent = 'Introduce usuario y contraseña.';
+                return;
+            }
+            const ok = await login(username, password);
+            if (ok) {
+                loginScreen.style.display = 'none';
+                appContent.style.display = 'block';
+                applyRole(currentUser.role);
+            }
+        });
+
+        loginPassword.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loginBtn.click();
+        });
+        loginUsername.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loginPassword.focus();
+        });
+
+        logoutBtn.addEventListener('click', logout);
+
+        // ---------- Eventos de pestañas (delegados: las pestañas son dinámicas) ----------
+        tabsNav.addEventListener('click', (e) => {
+            // Botón de gestión: mostrar/ocultar pestañas (todos los roles)
+            if (e.target.closest('#tabMgmtBtn')) {
+                openTabMgmt();
+                return;
+            }
+            // Botón "+": crear sección (solo admin)
+            if (e.target.closest('#tabAddSection')) {
+                if (isAdminUser()) openTabModalForCreate();
+                return;
+            }
+            const btn = e.target.closest('.tab-btn');
+            if (!btn || btn.classList.contains('hidden-tab')) return;
+            document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tab = btn.getAttribute('data-tab');
+            document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+            document.getElementById(`panel-${tab}`).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach((b) => b.setAttribute('aria-selected', 'false'));
+            btn.setAttribute('aria-selected', 'true');
+            // Si la tira de pestañas tiene desplazamiento, asegura que la activa quede a la vista
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        });
+
+        // Botones "Añadir enlace" de los paneles dinámicos (delegado)
+        document.addEventListener('click', (e) => {
+            const addBtn = e.target.closest('[data-modal]');
+            if (addBtn) openModalForNew(addBtn.getAttribute('data-modal'));
+        });
+
+        // Herramientas de sección: renombrar / eliminar (delegado, solo admin)
+        document.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('[data-edit-tab]');
+            if (editBtn) {
+                if (isAdminUser()) openTabModalForRename(editBtn.getAttribute('data-edit-tab'));
+                return;
+            }
+            const delBtn = e.target.closest('[data-del-tab]');
+            if (delBtn) deleteCustomTab(delBtn.getAttribute('data-del-tab'));
+        });
+
+        // ---------- Desplazamiento horizontal de las pestañas ----------
+        const TABS_SCROLL_STEP = 180; // px que avanza cada pulsación de las flechas ‹ ›
+
+        function updateTabsArrows() {
+            if (!tabsNav || !tabsArrowLeft || !tabsArrowRight) return;
+            const maxScroll = tabsNav.scrollWidth - tabsNav.clientWidth;
+            const overflow = maxScroll > 4;
+            tabsArrowLeft.hidden = !overflow;
+            tabsArrowRight.hidden = !overflow;
+            if (!overflow) return;
+            tabsArrowLeft.disabled = tabsNav.scrollLeft <= 2;
+            tabsArrowRight.disabled = tabsNav.scrollLeft >= maxScroll - 2;
+        }
+
+        function scrollTabs(dir) {
+            tabsNav.scrollBy({ left: dir * TABS_SCROLL_STEP, behavior: 'smooth' });
+        }
+
+        tabsArrowLeft.addEventListener('click', () => scrollTabs(-1));
+        tabsArrowRight.addEventListener('click', () => scrollTabs(1));
+        tabsNav.addEventListener('scroll', updateTabsArrows, { passive: true });
+        window.addEventListener('resize', updateTabsArrows);
+        window.addEventListener('load', updateTabsArrows);
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(updateTabsArrows).catch(() => {});
+        }
+        updateTabsArrows();
+
+        // Rueda del ratón sobre las pestañas: convierte el desplazamiento vertical en horizontal.
+        // En los extremos deja actuar al scroll de la página.
+        tabsNav.addEventListener('wheel', (e) => {
+            const maxScroll = tabsNav.scrollWidth - tabsNav.clientWidth;
+            if (maxScroll <= 0) return;
+            const goingRight = e.deltaY > 0 || e.deltaX > 0;
+            const canScroll = goingRight
+                ? tabsNav.scrollLeft < maxScroll - 1
+                : tabsNav.scrollLeft > 1;
+            if (!canScroll) return;
+            e.preventDefault();
+            const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            tabsNav.scrollLeft += delta;
+        }, { passive: false });
+
+        // Teclado: ← / → desplazan la tira de pestañas cuando el foco está en ella
+        tabsNav.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); scrollTabs(-1); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); scrollTabs(1); }
+        });
+
+        // ---------- Eventos de modal ----------
+        modalSave.addEventListener('click', saveItem);
+        modalCancel.addEventListener('click', closeModal);
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+        inputTitle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault();
+                inputUrl.focus(); }
+        });
+        inputUrl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault();
+                saveItem(); }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalOverlay.classList.contains('open')) closeModal();
+                if (tabModalOverlay.classList.contains('open')) closeTabModal();
+                if (tabMgmtOverlay.classList.contains('open')) closeTabMgmt();
+                closeMoveMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && tabModalOverlay.classList.contains('open')
+                && !(e.target instanceof HTMLButtonElement)) {
+                e.preventDefault();
+                saveTabModal();
+            }
+        });
+
+        tabModalSave.addEventListener('click', saveTabModal);
+        tabModalCancel.addEventListener('click', closeTabModal);
+        tabModalClose.addEventListener('click', closeTabModal);
+        tabModalOverlay.addEventListener('click', (e) => {
+            if (e.target === tabModalOverlay) closeTabModal();
+        });
+
+        // ---------- Eventos del panel de gestión de pestañas ----------
+        tabMgmtClose.addEventListener('click', closeTabMgmt);
+        tabMgmtDone.addEventListener('click', closeTabMgmt);
+        tabMgmtOverlay.addEventListener('click', (e) => {
+            if (e.target === tabMgmtOverlay) closeTabMgmt();
+        });
+
+        // ---------- Eventos de botones "Añadir enlace" ----------
+        // (delegados junto a los eventos de pestañas, arriba)
+
+        // ---------- Eventos de gestión de usuarios ----------
+        btnAddUser.addEventListener('click', async () => {
+            const username = newUserUsername.value.trim();
+            const password = newUserPassword.value.trim();
+            const role = newUserRole.value;
+            if (!username || !password) {
+                alert('Completa todos los campos.');
+                return;
+            }
+            await addUser(username, password, role);
+            newUserUsername.value = '';
+            newUserPassword.value = '';
+            newUserRole.value = 'user';
+        });
+
+        // ---------- Inicialización ----------
+        async function init() {
+            // Iniciar escuchas de enlaces para las secciones predefinidas
+            getContentTabKeys().forEach(listenToTab);
+
+            // Escuchar las secciones creadas por el admin (nodo "tabs")
+            onValue(ref(database, 'tabs'), (snapshot) => {
+                customTabs = snapshot.val() || {};
+                Object.keys(customTabs).forEach(listenToTab);
+                rebuildTabsAndPanels();
+                // Normalizar tabOrder si hay secciones sin posición guardada
+                if (isAdminUser() && cachedTabOrder) {
+                    const known = Object.keys(cachedTabOrder);
+                    const missing = getContentTabKeys().filter((k) => !known.includes(k));
+                    if (missing.length > 0) persistTabOrderFromDOM();
+                }
+            }, (error) => {
+                console.error('Error al escuchar las secciones:', error);
+            });
+
+            // Escuchar el orden guardado de las pestañas (nodo "tabOrder")
+            onValue(ref(database, 'tabOrder'), (snapshot) => {
+                cachedTabOrder = snapshot.val();
+                applyTabOrder();
+            }, (error) => {
+                console.error('Error al escuchar el orden de las pestañas:', error);
+            });
+
+            // Construir la tira de pestañas y los paneles de contenido
+            rebuildTabsAndPanels();
+
+            // Mostrar login
+            loginScreen.style.display = 'flex';
+            appContent.style.display = 'none';
+
+            console.log('✅ EsCuatroCero · App iniciada.');
+
+            // Crear usuarios de prueba automáticamente si no existen
+            await createTestUsers();
+
+            // Mensaje amigable
+            loginError.textContent = 'Introduce tus credenciales.';
+            loginError.className = 'login-error';
+            setTimeout(() => {
+                loginError.textContent = '';
+                loginError.className = 'login-error';
+            }, 4000);
+        }
+
+        init();
+
+        // Registro del Service Worker (PWA). Solo en HTTPS o localhost;
+        // al abrir el archivo directamente (file://) se omite silenciosamente.
+        if ('serviceWorker' in navigator &&
+            (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
