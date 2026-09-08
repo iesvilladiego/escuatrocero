@@ -467,17 +467,41 @@
             -webkit-touch-callout: none;
         }
 
+        /* Grupo anclado a la derecha de la tira: "+" (admin) y gestión de pestañas */
+        .tab-utils {
+            flex: 0 0 auto;
+            align-self: center;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 0 0 0.35rem auto;   /* margin-left:auto: lo empuja a la derecha */
+            padding: 0 0.25rem;
+            position: sticky;           /* fijo al borde derecho al desplazar la tira */
+            right: 1rem;                /* deja hueco a la flecha › cuando hay desborde */
+            z-index: 4;
+        }
+
+        /* Fundido blanco a la izquierda del grupo cuando las pestañas pasan por debajo */
+        .tab-utils::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: -0.4rem;
+            bottom: -0.4rem;
+            width: 1.5rem;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff 85%);
+            pointer-events: none;
+        }
+
         /* Botón "+" para añadir secciones (solo admin) */
         .tab-add {
             flex: 0 0 auto;
-            align-self: center;
-            background: transparent;
+            background: #ffffff;
             border: 1.5px dashed #b9c6d2;
             color: #6b7f94;
             border-radius: 40px;
             width: 2.2rem;
             height: 2.2rem;
-            margin: 0 0.25rem 0.35rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -1250,6 +1274,9 @@
             .modal {
                 max-width: 560px;
             }
+            .tab-utils {
+                right: 0.4rem;          /* casi al ras; la flecha › no llega tan adentro */
+            }
         }
 
         /* Escritorio grande: el frame crece hasta 1560px */
@@ -1335,6 +1362,9 @@
             }
             .tab-btn .tab-grip {
                 font-size: 0.6rem;
+            }
+            .tab-utils {
+                right: 1.4rem;          /* flecha › más ancha en móvil: más hueco */
             }
             .content {
                 padding: 1.5rem 1rem 2rem;
@@ -2187,7 +2217,12 @@
             }
             tabsNav.appendChild(uBtn);
 
-            // Botón "+" para crear secciones (solo admin)
+            // Grupo fijo a la derecha de la tira: botón "+" para crear secciones (solo admin)
+            // y botón de gestión de pestañas (todos los roles)
+            const tabUtils = document.createElement('span');
+            tabUtils.className = 'tab-utils';
+            tabUtils.id = 'tabUtils';
+
             const addTabBtn = document.createElement('button');
             addTabBtn.type = 'button';
             addTabBtn.className = 'tab-add' + (admin ? '' : ' hidden-tab');
@@ -2195,9 +2230,8 @@
             addTabBtn.title = 'Añadir sección';
             addTabBtn.setAttribute('aria-label', 'Añadir sección');
             addTabBtn.innerHTML = '<i class="fas fa-plus"></i>';
-            tabsNav.appendChild(addTabBtn);
+            tabUtils.appendChild(addTabBtn);
 
-            // Botón de gestión de pestañas (ocultar/mostrar; todos los roles)
             const mgmtBtn = document.createElement('button');
             mgmtBtn.type = 'button';
             mgmtBtn.className = 'tab-add tab-mgmt';
@@ -2205,7 +2239,9 @@
             mgmtBtn.title = 'Gestionar pestañas';
             mgmtBtn.setAttribute('aria-label', 'Gestionar pestañas');
             mgmtBtn.innerHTML = '<i class="fas fa-sliders-h"></i>';
-            tabsNav.appendChild(mgmtBtn);
+            tabUtils.appendChild(mgmtBtn);
+
+            tabsNav.appendChild(tabUtils);
 
             // Aplicar las pestañas que este usuario tiene ocultas y validar la activa
             applyHiddenTabs();
@@ -2733,11 +2769,16 @@
             };
             btns.sort((a, b) => rank(a.dataset.tab) - rank(b.dataset.tab));
             btns.forEach((b) => tabsNav.appendChild(b));
-            // Los botones "+" y de gestión siempre quedan al final de la tira
-            const addTabBtn = document.getElementById('tabAddSection');
-            if (addTabBtn) tabsNav.appendChild(addTabBtn);
-            const mgmtBtn = document.getElementById('tabMgmtBtn');
-            if (mgmtBtn) tabsNav.appendChild(mgmtBtn);
+            // El grupo "+"/gestión siempre queda al final de la tira
+            const tabUtils = document.getElementById('tabUtils');
+            if (tabUtils) {
+                tabsNav.appendChild(tabUtils);
+            } else {
+                const addTabBtn = document.getElementById('tabAddSection');
+                if (addTabBtn) tabsNav.appendChild(addTabBtn);
+                const mgmtBtn = document.getElementById('tabMgmtBtn');
+                if (mgmtBtn) tabsNav.appendChild(mgmtBtn);
+            }
             updateTabsArrows();
         }
 
