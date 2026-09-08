@@ -6,7 +6,7 @@
    - Navegación sin conexión: sirve index.html desde la caché
    Para publicar cambios de la PWA, sube el valor de VERSION.
    ============================================================ */
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.0.1';
 const SHELL_CACHE = `e40-shell-${VERSION}`;
 const CDN_CACHE = `e40-cdn-${VERSION}`;
 
