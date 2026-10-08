@@ -56,7 +56,10 @@ self.addEventListener('activate', (event) => {
         caches.keys()
             .then((keys) => Promise.all(
                 keys
-                    .filter((k) => k !== SHELL_CACHE && k !== CDN_CACHE)
+                    // IMPORTANTE: Cache Storage es compartido por todo el origen
+                    // (portal-ies-*, ace-villadiego-*, laliao-*, etc. son de OTRAS
+                    // PWAs). Solo se borran las cachés de la propia familia 'e40-'.
+                    .filter((k) => k !== SHELL_CACHE && k !== CDN_CACHE && k.startsWith('e40-'))
                     .map((k) => caches.delete(k))
             ))
             .then(() => self.clients.claim())
