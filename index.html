@@ -247,6 +247,36 @@
             flex-wrap: wrap;
         }
 
+        /* Chip de versión junto al título: se rellena en vivo con la
+           VERSION que reporta el Service Worker (ver JS al final) */
+        .banner-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+            color: #d7ecf9;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            border-radius: 999px;
+            padding: 0.22rem 0.7rem;
+            letter-spacing: 0.03em;
+            line-height: 1;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .banner-chip[hidden] {
+            display: none;
+        }
+
+        .banner-chip i {
+            font-size: 0.62rem;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
         .banner-sub {
             font-size: 1rem;
             font-weight: 500;
@@ -299,6 +329,115 @@
         }
         .banner-badge .logout-btn:hover {
             background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ---------- Aviso de actualización disponible (toast) ---------- */
+        .update-toast {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            z-index: 1300;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #ffffff;
+            color: #0b2a41;
+            border: 1px solid rgba(11, 42, 65, 0.12);
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(11, 42, 65, 0.22);
+            padding: 0.9rem 1rem;
+            max-width: 400px;
+            animation: update-toast-in 0.35s ease;
+        }
+
+        .update-toast[hidden] {
+            display: none;
+        }
+
+        .update-toast > i {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: #1a4b6e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .update-toast-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            min-width: 0;
+        }
+
+        .update-toast-text strong {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0b2a41;
+        }
+
+        .update-toast-text span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #5b7590;
+        }
+
+        .update-toast-btn {
+            flex-shrink: 0;
+            background: #0b2a41;
+            border: none;
+            color: #ffffff;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .update-toast-btn:hover {
+            background: #1a4b6e;
+        }
+
+        .update-toast-btn i {
+            margin-right: 0.35rem;
+            font-size: 0.72rem;
+        }
+
+        .update-toast-close {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: #5b7590;
+            font-size: 1.15rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.2rem 0.3rem;
+            font-family: inherit;
+        }
+
+        .update-toast-close:hover {
+            color: #0b2a41;
+        }
+
+        @keyframes update-toast-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 700px) {
+            .update-toast {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+                max-width: none;
+            }
         }
 
         /* ---------- Pestañas ---------- */
@@ -1428,6 +1567,10 @@
             .banner-title {
                 font-size: 1.3rem;
             }
+            .banner-chip {
+                font-size: 0.62rem;
+                padding: 0.18rem 0.6rem;
+            }
             .banner-logo {
                 width: 44px;
                 height: 44px;
@@ -1526,6 +1669,10 @@
                 <div class="banner-text">
                     <div class="banner-title">
                         EsCuatroCero
+                        <span class="banner-chip" id="swVersionChip" hidden title="Versión activa del Service Worker">
+                            <i class="fas fa-code-branch" aria-hidden="true"></i>
+                            <span id="swVersionText"></span>
+                        </span>
                     </div>
                     <div class="banner-sub">
                         <i class="fas fa-map-pin"></i> IES Virgen de Villadiego, Peñaflor
@@ -1659,6 +1806,19 @@
                 <button class="btn-primary" id="tabMgmtDone"><i class="fas fa-check"></i> Listo</button>
             </div>
         </div>
+    </div>
+
+    <!-- Aviso de actualización disponible (se muestra desde JS) -->
+    <div class="update-toast" id="updateToast" hidden role="status" aria-live="polite">
+        <i class="fas fa-download" aria-hidden="true"></i>
+        <div class="update-toast-text">
+            <strong>Nueva versión disponible</strong>
+            <span id="updateToastVersion"></span>
+        </div>
+        <button class="update-toast-btn" id="updateReloadBtn" type="button">
+            <i class="fas fa-sync-alt"></i> Recargar
+        </button>
+        <button class="update-toast-close" id="updateDismissBtn" type="button" aria-label="Descartar aviso">&times;</button>
     </div>
 
     <script type="module">
@@ -3484,12 +3644,111 @@
 
         init();
 
+        /* ---------- Versión "viva" del SW + aviso de actualización ----------
+           sw.js expone su VERSION respondiendo al mensaje GET_VERSION.
+           - El chip del banner pinta la versión del SW que controla la
+             página y se refresca solo cuando un SW nuevo toma el control
+             (controllerchange, gracias a skipWaiting + clients.claim).
+           - Si la versión del SW difiere de la que había al cargar esta
+             página, aparece el aviso "Nueva versión disponible" con
+             botón Recargar. Se comprueba si hay novedades cada 15 min
+             y al volver a la pestaña (reg.update()).
+           - Sin SW (file:// o http no seguro): chip oculto, sin avisos. */
+        let versionPagina = null;      // versión del SW al cargar esta página
+        let avisoDescartado = false;   // el usuario cerró el aviso en esta sesión
+
+        function pedirVersionSW(worker) {
+            return new Promise((resolve, reject) => {
+                const canal = new MessageChannel();
+                const temporizador = setTimeout(() => {
+                    canal.port1.close();
+                    reject(new Error('El Service Worker no respondió a tiempo'));
+                }, 2500);
+                canal.port1.onmessage = (ev) => {
+                    clearTimeout(temporizador);
+                    if (ev.data && ev.data.type === 'VERSION' && ev.data.version) {
+                        resolve(String(ev.data.version));
+                    } else {
+                        reject(new Error('Respuesta inesperada del Service Worker'));
+                    }
+                };
+                try {
+                    worker.postMessage({ type: 'GET_VERSION' }, [canal.port2]);
+                } catch (err) {
+                    clearTimeout(temporizador);
+                    reject(err);
+                }
+            });
+        }
+
+        async function actualizarChipVersionSW(registro) {
+            const chip = document.getElementById('swVersionChip');
+            const texto = document.getElementById('swVersionText');
+            if (!chip || !texto) return;
+            try {
+                const reg = registro || await navigator.serviceWorker.getRegistration();
+                const worker = navigator.serviceWorker.controller
+                    || (reg && (reg.active || reg.waiting || reg.installing));
+                if (!worker) return;
+                const version = await pedirVersionSW(worker);
+                if (version) {
+                    texto.textContent = version;
+                    chip.hidden = false;
+                    if (versionPagina === null) versionPagina = version;
+                    return version;
+                }
+            } catch (err) {
+                /* Primera visita: el SW puede seguir instalándose y aún no
+                   responder; al activarse y tomar el control se reintenta
+                   desde el listener de controllerchange. */
+            }
+        }
+
+        /* Muestra el toast de actualización (versión nueva del SW) */
+        function mostrarAvisoActualizacion(version) {
+            if (avisoDescartado) return;
+            const toast = document.getElementById('updateToast');
+            const etiqueta = document.getElementById('updateToastVersion');
+            if (!toast) return;
+            if (etiqueta) etiqueta.textContent = version + ' · recarga para aplicarla';
+            toast.hidden = false;
+        }
+
         // Registro del Service Worker (PWA). Solo en HTTPS o localhost;
         // al abrir el archivo directamente (file://) se omite silenciosamente.
         if ('serviceWorker' in navigator &&
             (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+            // El SW que controla la página cambia (primera instalación o
+            // actualización): refrescar el chip y, si la versión es nueva
+            // frente a la de esta carga de página, avisar al usuario.
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                actualizarChipVersionSW().then((version) => {
+                    if (version && versionPagina && version !== versionPagina) {
+                        mostrarAvisoActualizacion(version);
+                    }
+                });
+            });
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(() => {});
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        actualizarChipVersionSW(reg);
+                        // Comprobación periódica de actualizaciones del SW:
+                        // cada 15 minutos y al volver a la pestaña.
+                        setInterval(() => reg.update().catch(() => {}), 15 * 60 * 1000);
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden) reg.update().catch(() => {});
+                        });
+                    })
+                    .catch(() => {});
+            });
+            // Botones del aviso de actualización
+            const btnRecargar = document.getElementById('updateReloadBtn');
+            const btnCerrar = document.getElementById('updateDismissBtn');
+            if (btnRecargar) btnRecargar.addEventListener('click', () => location.reload());
+            if (btnCerrar) btnCerrar.addEventListener('click', () => {
+                avisoDescartado = true;
+                const toast = document.getElementById('updateToast');
+                if (toast) toast.hidden = true;
             });
         }
     </script>
