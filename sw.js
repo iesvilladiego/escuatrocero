@@ -4,9 +4,12 @@
    - CDNs (fuentes, Font Awesome, SDK Firebase): stale-while-revalidate
    - Backend de Firebase (datos y autenticación): SIEMPRE red, nunca caché
    - Navegación sin conexión: sirve index.html desde la caché
+   - API de mensajes: la página consulta la versión activa (GET_VERSION)
+     para pintar el chip de versión del banner y avisar de
+     actualizaciones disponibles
    Para publicar cambios de la PWA, sube el valor de VERSION.
    ============================================================ */
-const VERSION = 'v1.0.1';
+const VERSION = 'v1.0.3'; // v1.0.3: chip de versión en el banner + aviso de actualización disponible + mensaje GET_VERSION
 const SHELL_CACHE = `e40-shell-${VERSION}`;
 const CDN_CACHE = `e40-cdn-${VERSION}`;
 
@@ -103,6 +106,20 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(staleWhileRevalidate(req, CDN_CACHE));
     }
     /* Otros orígenes no controlados: se dejan pasar sin cachear */
+});
+
+/* Mensajes de la página: consulta de la versión para el chip del banner.
+   La página envía { type: 'GET_VERSION' } y el SW responde
+   { type: 'VERSION', version } por el MessageChannel recibido
+   (o, como respaldo, al emisor directamente). */
+self.addEventListener('message', (event) => {
+    if (!event.data || event.data.type !== 'GET_VERSION') return;
+    const respuesta = { type: 'VERSION', version: VERSION };
+    if (event.ports && event.ports.length > 0) {
+        event.ports[0].postMessage(respuesta);
+    } else if (event.source) {
+        event.source.postMessage(respuesta);
+    }
 });
 
 async function staleWhileRevalidate(req, cacheName) {
