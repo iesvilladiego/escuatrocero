@@ -9,7 +9,7 @@
      actualizaciones disponibles
    Para publicar cambios de la PWA, sube el valor de VERSION.
    ============================================================ */
-const VERSION = 'v1.0.3'; // v1.0.3: chip de versión en el banner + aviso de actualización disponible + mensaje GET_VERSION
+const VERSION = 'v1.0.4'; // v1.0.3: chip de versión en el banner + aviso de actualización disponible + mensaje GET_VERSION
 const SHELL_CACHE = `e40-shell-${VERSION}`;
 const CDN_CACHE = `e40-cdn-${VERSION}`;
 
